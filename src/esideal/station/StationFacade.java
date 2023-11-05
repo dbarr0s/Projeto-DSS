@@ -1,4 +1,4 @@
-package esideal;
+package esideal.station;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,7 +2,7 @@ package esideal.ui;
 
 import java.util.Scanner;
 
-import esideal.StationFacade;
+import esideal.station.*;
 
 public class UI {
     static Scanner s = new Scanner(System.in);
@@ -13,9 +13,9 @@ public class UI {
         String username, password;
 
         System.out.println("----------BEM VINDO----------");
-        System.out.println("Introduza o seu username");
+        System.out.println("Introduza o seu username de funcionário");
         username = s.nextLine();
-        System.out.println("Introduza a sua password");
+        System.out.println("Introduza a sua password de funcionário");
         password = s.nextLine();
 
         if(estacao.login(username, password)){
@@ -26,7 +26,8 @@ public class UI {
     }
     
     public static void menu(){
-        
+        System.out.println("1. Servicos");
+        System.out.println("1. Clientes");
     }
 
     public static void start(StationFacade estacao){
