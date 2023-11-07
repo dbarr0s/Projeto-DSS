@@ -4,5 +4,6 @@ public enum TipoServico {
     GASOLINA,
     GASOLEO,
     ELETRICO,
+    HIBRIDO,
     UNIVERSAL,
 }

@@ -5,10 +5,12 @@ import java.util.Map;
 
 import esideal.station.cliente.*;
 import esideal.station.funcionario.*;
+import esideal.station.servico.Servico;
 
 public class StationFacade {
     private Map<String, Cliente> clientes;
     private Map<String, Funcionario> funcionarios;
+    private Map<String, Servico> servicosPendentes; //Identificados pelo nome do cliente
 
     public StationFacade(){
         this.clientes = new HashMap<>();

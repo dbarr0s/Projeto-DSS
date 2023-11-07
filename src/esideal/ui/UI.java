@@ -26,8 +26,8 @@ public class UI {
     }
     
     public static void menu(){
-        System.out.println("1. Servicos");
-        System.out.println("1. Clientes");
+        System.out.println("1. Novo serviço");
+        System.out.println("1. Serviços pendentes");
     }
 
     public static void start(StationFacade estacao){
