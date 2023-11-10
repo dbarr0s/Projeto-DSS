@@ -9,4 +9,5 @@ public class Cliente {
     private String morada;
     private int contacto;
     private int nif;
+    private Map<String, Veiculo> veiculos;
 }

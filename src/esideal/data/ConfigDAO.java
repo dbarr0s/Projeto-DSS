@@ -1,6 +1,6 @@
 package esideal.data;
 
-public class Config {
+public class ConfigDAO {
     static final String USERNAME = "root";
     static final String PASSWORD = "";
     private static final String DATABASE = "esideal";
