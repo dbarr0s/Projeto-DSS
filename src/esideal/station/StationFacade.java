@@ -9,17 +9,19 @@ import esideal.station.servico.Servico;
 
 public class StationFacade {
     private Map<String, Cliente> clientes;
-    private Map<String, Funcionario> funcionarios;
+    private Map<Integer, Funcionario> funcionarios;
     private Map<String, Servico> servicosPendentes; //Identificados pelo nome do cliente
+    private Funcionario logado;
 
     public StationFacade(){
         this.clientes = new HashMap<>();
         this.funcionarios = new HashMap<>();
     }
 
-    public boolean login(String username, String password){
-        if(funcionarios.containsKey(username)){
-            if (funcionarios.get(username).checkPassword(password)) {
+    public boolean login(int IDFuncionario){
+        if(funcionarios.containsKey(IDFuncionario)){
+            if (funcionarios.containsKey(IDFuncionario)) {
+                logado = funcionarios.get(IDFuncionario);
                 return true;
             }
         }

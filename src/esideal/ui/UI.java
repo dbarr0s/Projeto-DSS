@@ -6,28 +6,26 @@ import esideal.station.*;
 
 public class UI {
     static Scanner s = new Scanner(System.in);
-    static String logado;
+    static int logado;
 
     public static void menuLogin(StationFacade estacao)
     {
-        String username, password;
+        int IDFuncionario;
 
         System.out.println("----------BEM VINDO----------");
-        System.out.println("Introduza o seu username de funcionário");
-        username = s.nextLine();
-        System.out.println("Introduza a sua password de funcionário");
-        password = s.nextLine();
+        System.out.println("Introduza o seu ID de funcionário");
+        IDFuncionario = s.nextInt();
 
-        if(estacao.login(username, password)){
-            logado = username;
+        if(estacao.login(IDFuncionario)){
+            logado = IDFuncionario;
             menu();
         }
         else menuLogin(estacao);
     }
     
     public static void menu(){
-        System.out.println("1. Novo serviço");
-        System.out.println("1. Serviços pendentes");
+        System.out.println("1. Novo serviço"); 
+        System.out.println("1. Serviços");
     }
 
     public static void start(StationFacade estacao){
