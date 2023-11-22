@@ -2,5 +2,6 @@ package esideal.station.servico;
 
 public enum Estado {
     PRONTO,
-    INICIO,
+    EM_ANDAMENTO,
+    INICIO
 }

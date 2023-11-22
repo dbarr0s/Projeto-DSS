@@ -1,6 +1,7 @@
 package esideal.station.funcionario;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Funcionario {
     private int cartaoFuncionario;
@@ -36,5 +37,23 @@ public class Funcionario {
 
     public TipoFuncionario getTipoFuncionario(){
         return this.tipoFuncionario;
+    }
+
+    public Funcionario clone(){
+        return new Funcionario(this);
+    }
+
+    public boolean equals(Object o){
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Funcionario f = (Funcionario) o;
+        return cartaoFuncionario == f.cartaoFuncionario &&
+        Objects.equals(horaEntrada, f.horaEntrada) &&
+        Objects.equals(horaSaida, f.horaSaida) &&
+        tipoFuncionario == f.tipoFuncionario;
     }
 }

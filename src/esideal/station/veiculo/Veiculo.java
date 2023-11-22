@@ -1,5 +1,9 @@
 package esideal.station.veiculo;
 
+import java.util.Objects;
+
+import esideal.station.servico.Servico;
+
 public class Veiculo {
     private String nome;
     private String matricula;
@@ -34,5 +38,23 @@ public class Veiculo {
 
     public TipoMotor getTipoMotor(){
         return this.tipoMotor;
+    }
+
+    public Veiculo clone() {
+        return new Veiculo(this);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Veiculo v = (Veiculo) o;
+        return Objects.equals(nome, v.nome) &&
+        Objects.equals(matricula, v.matricula) &&
+        tipoVeiculo == v.tipoVeiculo &&
+        tipoMotor == v.tipoMotor;
     }
 }

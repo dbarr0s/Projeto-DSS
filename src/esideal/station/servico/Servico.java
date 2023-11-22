@@ -1,5 +1,6 @@
 package esideal.station.servico;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Servico {
     private int numServiço;
@@ -56,5 +57,26 @@ public class Servico {
 
     public TipoServico getTipoServico(){
         return this.tipoServico;
+    }
+
+    public Servico clone() {
+        return new Servico(this);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Servico s = (Servico) o;
+        return numServiço == s.numServiço &&
+        Objects.equals(custServiço, s.custServiço) &&
+        estado == s.estado &&
+        Objects.equals(horaInicio, s.horaInicio) &&
+        Objects.equals(horaFim, s.horaFim) &&
+        Objects.equals(sms, s.sms) &&
+        tipoServico == s.tipoServico;
     }
 }
