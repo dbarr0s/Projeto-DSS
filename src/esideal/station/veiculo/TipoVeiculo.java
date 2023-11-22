@@ -1,8 +1,9 @@
 package esideal.station.veiculo;
 
 public enum TipoVeiculo {
-    GASOLINA,
-    GASOLEO,
-    ELETRICO,
-    HIBRIDO,
+    SUV,
+    SEDAN,
+    CARRINHA,
+    JIPE,
+    DESPORTIVO
 }

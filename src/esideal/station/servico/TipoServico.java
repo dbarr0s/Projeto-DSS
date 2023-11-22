@@ -1,7 +1,7 @@
 package esideal.station.servico;
 
 public enum TipoServico {
-    CHECKUP,
+    //CHECKUP,
     GASOLINA,
     GASOLEO,
     ELETRICO,
