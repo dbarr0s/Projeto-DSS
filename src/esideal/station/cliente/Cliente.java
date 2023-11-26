@@ -14,6 +14,8 @@ public class Cliente {
     private boolean voucher;
     private Map<String, Veiculo> veiculos;
 
+    /*CONSTRUTORES*/
+
     public Cliente(String nome, String morada, int nif, int telefone, String email, boolean voucher, Map<String, Veiculo> veiculos){
         this.nome = nome;
         this.morada = morada;
@@ -33,6 +35,8 @@ public class Cliente {
         this.voucher = c.getVoucher();
         this.veiculos = c.getVeiculos();
     }
+
+    /*GETTERS*/
 
     public String getNome(){
         return this.nome;
@@ -62,6 +66,8 @@ public class Cliente {
         return this.veiculos;
     }
 
+    /*OUTROS MÉTODOS*/
+
     public Cliente clone() {
         return new Cliente(this);
     }
@@ -80,5 +86,17 @@ public class Cliente {
         telefone == c.telefone && 
         Objects.equals(email, c.email) && 
         voucher == c.voucher;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Nome do Cliente: ").append(nome).append("\n");
+        sb.append("Morada do Cliente: ").append(morada).append("\n");
+        sb.append("NIF do Cliente: ").append(nif).append("\n");
+        sb.append("Nº do Cliente: ").append(telefone).append("\n");
+        sb.append("E-mail do Cliente: ").append(email).append("\n");
+        sb.append("Cliente tem voucher?: ").append(voucher).append("\n");
+        sb.append("Lista dos veículos do Cliente: ").append(veiculos.keySet()).append("\n");
+        return sb.toString();
     }
 }

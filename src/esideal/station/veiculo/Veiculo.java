@@ -2,13 +2,13 @@ package esideal.station.veiculo;
 
 import java.util.Objects;
 
-import esideal.station.servico.Servico;
-
 public class Veiculo {
     private String nome;
     private String matricula;
     private TipoVeiculo tipoVeiculo;
     private TipoMotor tipoMotor;
+
+    /*CONSTRUTORES*/
 
     public Veiculo(String nome, String matricula, TipoVeiculo tipoVeiculo, TipoMotor tipoMotor) {
         this.nome = nome;
@@ -23,6 +23,8 @@ public class Veiculo {
         this.tipoVeiculo = v.getTipoVeiculo();
         this.tipoMotor = v.getTipoMotor();
     }
+
+    /*GETTERS*/
 
     public String getNome(){
         return this.nome;
@@ -40,6 +42,8 @@ public class Veiculo {
         return this.tipoMotor;
     }
 
+    /*OUTROS MÉTODOS*/
+
     public Veiculo clone() {
         return new Veiculo(this);
     }
@@ -56,5 +60,14 @@ public class Veiculo {
         Objects.equals(matricula, v.matricula) &&
         tipoVeiculo == v.tipoVeiculo &&
         tipoMotor == v.tipoMotor;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Nome do Veículo: ").append(nome).append("\n");
+        sb.append("Matrícula do Veículo: ").append(matricula).append("\n");
+        sb.append("Tipo de Veículo: ").append(tipoVeiculo).append("\n");
+        sb.append("Tipo de Motor: ").append(tipoMotor).append("\n");
+        return sb.toString();
     }
 }

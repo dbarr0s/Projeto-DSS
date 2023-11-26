@@ -11,6 +11,8 @@ public class Servico {
     private String sms;
     private TipoServico tipoServico;
 
+    /*CONSTRUTORES*/
+    
     public Servico(int numServiço, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico) {
         this.numServiço = numServiço;
         this.custServiço = custServiço;
@@ -30,6 +32,8 @@ public class Servico {
         this.sms = s.getSms();
         this.tipoServico = s.getTipoServico();
     }
+
+    /*GETTERS*/
 
     public int getNumServiço(){
         return this.numServiço;
@@ -59,6 +63,8 @@ public class Servico {
         return this.tipoServico;
     }
 
+    /*OUTROS MÉTODOS*/
+
     public Servico clone() {
         return new Servico(this);
     }
@@ -78,5 +84,17 @@ public class Servico {
         Objects.equals(horaFim, s.horaFim) &&
         Objects.equals(sms, s.sms) &&
         tipoServico == s.tipoServico;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Nº do Serviço: ").append(numServiço).append("\n");
+        sb.append("Custo do Serviço: ").append(custServiço).append("\n");
+        sb.append("Estado do serviço: ").append(estado).append("\n");
+        sb.append("Hora do ínicio do serviço: ").append(horaInicio).append("\n");
+        sb.append("Hora do fim do serviço: ").append(horaFim).append("\n");
+        sb.append("SMS: ").append(sms).append("\n");
+        sb.append("Tipo de Serviço: ").append(tipoServico).append("\n");
+        return sb.toString();
     }
 }
