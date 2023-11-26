@@ -95,6 +95,8 @@ public class FichaVeiculo {
         sb.append("Funcionário responsável pelos serviços: ").append(funcionario).append("\n");
         sb.append("Serviços Executados no veículo: ").append(servExecutados.keySet()).append("\n");
         sb.append("Check-Up's Executados no veículo: ").append(checkupExecutados.keySet()).append("\n");
+        sb.append("Serviços Agendados no veículo: ").append(servAgendados.keySet()).append("\n");
+        sb.append("Check-Up's Agendados no veículo: ").append(checkUpAgendados.keySet()).append("\n");
         return sb.toString();
     }
 }

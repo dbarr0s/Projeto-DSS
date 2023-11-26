@@ -8,7 +8,7 @@ import esideal.station.veiculo.Veiculo;
 public class Cliente {
     private String nome;
     private String morada;
-    private int nif;
+    private Integer nif;
     private int telefone;
     private String email;
     private boolean voucher;

@@ -59,6 +59,10 @@ public class CheckUp {
         return this.estado;
     }
 
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
     public Map<String, Servico> getServAExecutar(){
         return this.servAExecutar;
     }
