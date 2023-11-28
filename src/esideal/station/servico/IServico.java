@@ -2,15 +2,13 @@ package esideal.station.servico;
 
 import java.time.LocalDateTime;
 
-import esideal.station.cliente.Cliente;
-import esideal.station.ficha.FichaVeiculo;
-import esideal.station.veiculo.Veiculo;
+import esideal.station.cliente.ClienteFacade;
+import esideal.station.funcionario.FuncFacade;
+import esideal.station.veiculo.VeiculoFacade;
 
 public interface IServico {
-    void agendarServico(FichaVeiculo f, Servico s, LocalDateTime horario);
-    void criarNovoServico(int numServico, Veiculo v, float custo, Estado estado, LocalDateTime inicio, LocalDateTime fim, String sms, TipoServico tipoServico);
+    void criarNovoServicoEAgendar(int numServiço, int funcResponsavel, String matricula, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico, FuncFacade f);
     void iniciarServico(int numServico, LocalDateTime horaInicio);
     void finalizarServico(int numServico);
-    void enviarMensagemCliente(Cliente cliente, String mensagem);
-    void notificarClienteFimServico(int numServico);
+    void notificarClienteFimServico(int numServico, VeiculoFacade v, ClienteFacade c);
 }

@@ -4,14 +4,16 @@ import java.util.Objects;
 
 public class Veiculo {
     private String nome;
+    private String nomeDono;
     private String matricula;
     private TipoVeiculo tipoVeiculo;
     private TipoMotor tipoMotor;
 
     /*CONSTRUTORES*/
 
-    public Veiculo(String nome, String matricula, TipoVeiculo tipoVeiculo, TipoMotor tipoMotor) {
+    public Veiculo(String nome, String nomeDono, String matricula, TipoVeiculo tipoVeiculo, TipoMotor tipoMotor) {
         this.nome = nome;
+        this.nomeDono = nomeDono;
         this.matricula = matricula;
         this.tipoVeiculo = tipoVeiculo;
         this.tipoMotor = tipoMotor;
@@ -19,6 +21,7 @@ public class Veiculo {
 
     public Veiculo(Veiculo v) {
         this.nome = v.getNome();
+        this.nomeDono = v.getDono();
         this.matricula = v.getMatricula();
         this.tipoVeiculo = v.getTipoVeiculo();
         this.tipoMotor = v.getTipoMotor();
@@ -28,6 +31,10 @@ public class Veiculo {
 
     public String getNome(){
         return this.nome;
+    }
+
+    public String getDono(){
+        return this.nomeDono;
     }
 
     public String getMatricula(){
@@ -58,6 +65,7 @@ public class Veiculo {
         Veiculo v = (Veiculo) o;
         return Objects.equals(nome, v.nome) &&
         Objects.equals(matricula, v.matricula) &&
+        Objects.equals(nomeDono, v.nomeDono) &&
         tipoVeiculo == v.tipoVeiculo &&
         tipoMotor == v.tipoMotor;
     }
@@ -65,6 +73,7 @@ public class Veiculo {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Nome do Veículo: ").append(nome).append("\n");
+        sb.append("Nome do Dono: ").append(nomeDono).append("\n");
         sb.append("Matrícula do Veículo: ").append(matricula).append("\n");
         sb.append("Tipo de Veículo: ").append(tipoVeiculo).append("\n");
         sb.append("Tipo de Motor: ").append(tipoMotor).append("\n");

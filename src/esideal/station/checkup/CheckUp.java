@@ -4,35 +4,33 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-import esideal.station.funcionario.Funcionario;
 import esideal.station.servico.Estado;
 import esideal.station.servico.Servico;
-import esideal.station.veiculo.Veiculo;
 
 public class CheckUp {
     private int numeroCheckUp;
-    private Veiculo veiculo;
+    private int funcResponsavel;
+    private String matricula;
     private LocalDateTime dataCheckUp;
-    private Funcionario funcionario;
     private Estado estado;
-    private Map<String, Servico> servAExecutar; 
+    private Map<Integer, Servico> servAExecutar; 
 
     /*CONSTRUTORES*/
 
-    public CheckUp(int numeroCheckUp, Veiculo veiculo, LocalDateTime dataCheckUp, Funcionario funcionario, Estado estado, Map<String, Servico> servAExecutar) {
+    public CheckUp(int numeroCheckUp, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, Estado estado, Map<Integer, Servico> servAExecutar) {
         this.numeroCheckUp = numeroCheckUp;
-        this.veiculo = veiculo;
+        this.funcResponsavel = funcResponsavel;
+        this.matricula = matricula;
         this.dataCheckUp = dataCheckUp;
-        this.funcionario = funcionario;
         this.estado = estado;
         this.servAExecutar = servAExecutar;
     }
 
     public CheckUp(CheckUp c) {
         this.numeroCheckUp = c.getNumCheckUp();
-        this.veiculo = c.getVeiculo();
+        this.funcResponsavel = c.getFuncResponsavel();
+        this.matricula = c.getMatricula();
         this.dataCheckUp = c.getDataCheckUp();
-        this.funcionario = c.getFuncionario();
         this.estado = c.getEstado();
         this.servAExecutar = c.getServAExecutar();
     }
@@ -43,16 +41,20 @@ public class CheckUp {
         return this.numeroCheckUp;
     }
 
-    public Veiculo getVeiculo(){
-        return this.veiculo;
+    public int getFuncResponsavel(){
+        return this.funcResponsavel;
+    }
+
+    public String getMatricula(){
+        return this.matricula;
     }
 
     public LocalDateTime getDataCheckUp(){
         return this.dataCheckUp;
     }
 
-    public Funcionario getFuncionario(){
-        return this.funcionario;
+    public void setDataCheckUp(LocalDateTime horario) {
+        this.dataCheckUp = horario;
     }
 
     public Estado getEstado(){
@@ -63,7 +65,7 @@ public class CheckUp {
         this.estado = estado;
     }
 
-    public Map<String, Servico> getServAExecutar(){
+    public Map<Integer, Servico> getServAExecutar(){
         return this.servAExecutar;
     }
 
@@ -81,18 +83,18 @@ public class CheckUp {
             return false;
         }
         CheckUp c = (CheckUp) o;
-        return veiculo == c.veiculo &&
+        return matricula == c.matricula &&
         Objects.equals(dataCheckUp, c.dataCheckUp) &&
-        funcionario == c.funcionario && 
+        funcResponsavel == c.funcResponsavel && 
         estado == c.estado;
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Nº do Check-Up: ").append(numeroCheckUp).append("\n");
-        sb.append("Check-Up para Veículo: ").append(veiculo).append("\n");
+        sb.append("Check-Up para Veículo: ").append(matricula).append("\n");
         sb.append("Data do Check-Up: ").append(dataCheckUp).append("\n");
-        sb.append("Funcionário Responsável: ").append(funcionario).append("\n");
+        sb.append("Funcionário Responsável: ").append(funcResponsavel).append("\n");
         sb.append("Estado: ").append(estado).append("\n");
         sb.append("Serviços a Executar: ").append(servAExecutar.keySet()).append("\n");
         return sb.toString();

@@ -3,70 +3,53 @@ package esideal.station.ficha;
 import java.util.Map;
 
 import esideal.station.checkup.CheckUp;
-import esideal.station.cliente.Cliente;
-import esideal.station.funcionario.Funcionario;
 import esideal.station.servico.Servico;
-import esideal.station.veiculo.Veiculo;
 
 public class FichaVeiculo {
-    private Cliente cliente;
-    private Veiculo veiculo;
-    private Funcionario funcionario;
-    private Map<Integer, Servico> servExecutados;
-    private Map<Integer, CheckUp> checkupExecutados;
-    private Map<Integer, Servico> servAgendados;
-    private Map<Integer, Servico> checkUpAgendados;    
+    private int numFicha;
+    private String nomeCliente;
+    private String nomeVeiculo;
+    private Map<Integer, Servico> servicos;
+    private Map<Integer, CheckUp> checkups;
 
     /*CONSTRUTORES*/    
 
-    public FichaVeiculo(Cliente cliente, Veiculo veiculo, Funcionario funcionario, Map<Integer, Servico> servExecutados, Map<Integer, CheckUp> checkupExecutados, Map<Integer, Servico> servAgendados, Map<Integer, Servico> checkUpAgendados){
-        this.cliente = cliente;
-        this.veiculo = veiculo;
-        this.funcionario = funcionario;
-        this.servExecutados = servExecutados;
-        this.checkupExecutados = checkupExecutados;
-        this.servAgendados = servAgendados;
-        this.checkUpAgendados = checkUpAgendados;
+    public FichaVeiculo(int numFicha, String nomeCliente, String nomeVeiculo, Map<Integer, Servico> servicos, Map<Integer, CheckUp> checkups){
+        this.numFicha = numFicha;
+        this.nomeCliente = nomeCliente;
+        this.nomeVeiculo = nomeVeiculo;
+        this.servicos = servicos;
+        this.checkups = checkups;
     }
 
     public FichaVeiculo(FichaVeiculo f){
-        this.cliente = f.getCliente();
-        this.veiculo = f.getVeiculo();
-        this.funcionario = f.getFuncionario();
-        this.servExecutados = f.getServExecutados();
-        this.checkupExecutados = f.getCheckupExecutados();
-        this.servAgendados = f.getServAgendados();
-        this.checkUpAgendados = f.getCheckUpAgendados();
+        this.numFicha = f.getNumFicha();
+        this.nomeCliente = f.getNomeCliente();
+        this.nomeVeiculo = f.getNomeVeiculo();
+        this.servicos = f.getServicos();
+        this.checkups = f.getCheckups();
     }
 
     /*GETTERS*/
 
-    public Cliente getCliente(){
-        return this.cliente;
+    public int getNumFicha(){
+        return this.numFicha;
     }
 
-    public Veiculo getVeiculo(){
-        return this.veiculo;
+    public String getNomeCliente(){
+        return this.nomeCliente;
     }
 
-    public Funcionario getFuncionario(){
-        return this.funcionario;
+    public String getNomeVeiculo(){
+        return this.nomeVeiculo;
     }
 
-    public Map<Integer, Servico> getServExecutados(){
-        return this.servExecutados;
+    public Map<Integer, Servico> getServicos(){
+        return this.servicos;
     }
 
-    public Map<Integer, CheckUp> getCheckupExecutados(){
-        return this.checkupExecutados;
-    }
-
-    public Map<Integer, Servico> getServAgendados(){
-        return this.servAgendados;
-    }
-
-    public Map<Integer, Servico> getCheckUpAgendados(){
-        return this.checkUpAgendados;
+    public Map<Integer, CheckUp> getCheckups(){
+        return this.checkups;
     }
 
     /*OUTROS MÉTODOS*/
@@ -83,20 +66,18 @@ public class FichaVeiculo {
             return false;
         }
         FichaVeiculo f = (FichaVeiculo) o;
-        return cliente == f.cliente &&
-        veiculo == f.veiculo &&
-        funcionario == f.funcionario;
+        return nomeCliente == f.nomeCliente &&
+        numFicha == f.numFicha &&
+        nomeVeiculo == f.nomeVeiculo;
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Dono do Veículo: ").append(cliente).append("\n");
-        sb.append("Veículo: ").append(veiculo).append("\n");
-        sb.append("Funcionário responsável pelos serviços: ").append(funcionario).append("\n");
-        sb.append("Serviços Executados no veículo: ").append(servExecutados.keySet()).append("\n");
-        sb.append("Check-Up's Executados no veículo: ").append(checkupExecutados.keySet()).append("\n");
-        sb.append("Serviços Agendados no veículo: ").append(servAgendados.keySet()).append("\n");
-        sb.append("Check-Up's Agendados no veículo: ").append(checkUpAgendados.keySet()).append("\n");
+        sb.append("Nº da Ficha: ").append(numFicha).append("\n");
+        sb.append("Dono do Veículo: ").append(nomeCliente).append("\n");
+        sb.append("Veículo: ").append(nomeVeiculo).append("\n");
+        sb.append("Serviços do veículo: ").append(servicos.keySet()).append("\n");
+        sb.append("Check-Up's do veículo: ").append(checkups.keySet()).append("\n");
         return sb.toString();
     }
 }

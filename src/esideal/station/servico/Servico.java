@@ -2,11 +2,11 @@ package esideal.station.servico;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import esideal.station.veiculo.Veiculo;
 
 public class Servico {
     private int numServiço;
-    private Veiculo veiculo;
+    private int funcResponsavel;
+    private String matricula;
     private Float custServiço;
     private Estado estado;
     private LocalDateTime horaInicio;
@@ -16,9 +16,10 @@ public class Servico {
 
     /*CONSTRUTORES*/
     
-    public Servico(int numServiço, Veiculo veiculo, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico) {
+    public Servico(int numServiço, int funcResponsavel, String matricula, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico) {
         this.numServiço = numServiço;
-        this.veiculo = veiculo;
+        this.funcResponsavel = funcResponsavel;
+        this.matricula = matricula;
         this.custServiço = custServiço;
         this.estado = estado;
         this.horaInicio = horaInicio;
@@ -29,7 +30,8 @@ public class Servico {
 
     public Servico(Servico s) {
         this.numServiço = s.getNumServiço();
-        this.veiculo = s.getVeiculo();
+        this.funcResponsavel = s.getFuncResponsavel();
+        this.matricula = s.getMatricula();
         this.custServiço = s.getCustServiço();
         this.estado = s.getEstado();
         this.horaInicio = s.getHoraInicio();
@@ -44,8 +46,12 @@ public class Servico {
         return this.numServiço;
     }
 
-    public Veiculo getVeiculo(){
-        return this.veiculo;
+    public int getFuncResponsavel(){
+        return this.funcResponsavel;
+    }
+
+    public String getMatricula(){
+        return this.matricula;
     }
 
     public Float getCustServiço(){
@@ -99,7 +105,8 @@ public class Servico {
         }
         Servico s = (Servico) o;
         return numServiço == s.numServiço &&
-        veiculo == s.veiculo &&
+        funcResponsavel == s.funcResponsavel &&
+        matricula == s.matricula &&
         Objects.equals(custServiço, s.custServiço) &&
         estado == s.estado &&
         Objects.equals(horaInicio, s.horaInicio) &&
@@ -111,7 +118,8 @@ public class Servico {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Nº do Serviço: ").append(numServiço).append("\n");
-        sb.append("Veículo: ").append(veiculo).append("\n");
+        sb.append("Funcionário responsável: ").append(funcResponsavel).append("\n");
+        sb.append("Matrícula do Veículo: ").append(matricula).append("\n");
         sb.append("Custo do Serviço: ").append(custServiço).append("\n");
         sb.append("Estado do serviço: ").append(estado).append("\n");
         sb.append("Hora do ínicio do serviço: ").append(horaInicio).append("\n");
