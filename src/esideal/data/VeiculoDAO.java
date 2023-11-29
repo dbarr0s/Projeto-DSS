@@ -29,6 +29,7 @@ public class VeiculoDAO implements Map<String, Veiculo>{
                         "Nome VARCHAR(50) NOT NULL, " +
                         "TVeiculo VARCHAR(50) NOT NULL, " +
                         "TMotor VARCHAR(50) NOT NULL, " +
+                        "FOREIGN KEY (Dono) REFERENCES clientes(Dono), " +
                         "PRIMARY KEY (Matricula));";
             stm.executeUpdate(sql);
         }
@@ -96,6 +97,7 @@ public class VeiculoDAO implements Map<String, Veiculo>{
              Statement stm = conn.createStatement();
              ResultSet rs = stm.executeQuery("SELECT * FROM veiculos WHERE Matricula='"+key+"'")) {
             if(rs.next()){
+
                 String matricula = rs.getString("Matricula");
                 String dono = rs.getString("Dono");
                 String nome = rs.getString("Nome");
@@ -199,16 +201,8 @@ public class VeiculoDAO implements Map<String, Veiculo>{
              ResultSet rs = stm.executeQuery("SELECT * FROM veiculos")) { // Seleciona todas as colunas da tabela veiculos
             while (rs.next()) {
                 String matricula = rs.getString("Matricula");
-                String dono = rs.getString("Dono");
-                String nome = rs.getString("Nome");
-                String tveiculo = rs.getString("TVeiculo");
-                String tmotor = rs.getString("TMotor");
-
-                TipoVeiculo t = TipoVeiculo.valueOf(tveiculo);
-                TipoMotor m = TipoMotor.valueOf(tmotor);
-
-                Veiculo v = new Veiculo(nome, dono, matricula, t, m);
-                res.add(v);
+                Veiculo v = this.get(matricula);
+                res.add(v); 
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -217,30 +211,20 @@ public class VeiculoDAO implements Map<String, Veiculo>{
     }
     
 
-@Override
-public Set<Entry<String, Veiculo>> entrySet() {
-    Set<Entry<String, Veiculo>> entrySet = new HashSet<>();
-    try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
-         Statement stm = conn.createStatement();
-         ResultSet rs = stm.executeQuery("SELECT * FROM veiculos")) { // Seleciona todas as colunas da tabela veiculos
-        while (rs.next()) {
-            String matricula = rs.getString("Matricula");
-            String dono = rs.getString("Dono");
-            String nome = rs.getString("Nome");
-            String tveiculo = rs.getString("TVeiculo");
-            String tmotor = rs.getString("TMotor");
-
-            TipoVeiculo t = TipoVeiculo.valueOf(tveiculo);
-            TipoMotor m = TipoMotor.valueOf(tmotor);
-
-            Veiculo v = new Veiculo(nome, dono, matricula, t, m);
-            Entry<String, Veiculo> entry = new AbstractMap.SimpleEntry<>(matricula, v);
-            entrySet.add(entry);
+    @Override
+    public Set<Entry<String, Veiculo>> entrySet() {
+        Set<Entry<String, Veiculo>> entrySet = new HashSet<>();
+        try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
+            Statement stm = conn.createStatement();
+            ResultSet rs = stm.executeQuery("SELECT * FROM veiculos")) { // Seleciona todas as colunas da tabela veiculos
+            while (rs.next()) {
+                String matricula = rs.getString("Matricula");
+                entrySet.add(new AbstractMap.SimpleEntry<>(matricula, this.get(matricula)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new NullPointerException(e.getMessage());
         }
-    } catch (SQLException e) {
-        throw new RuntimeException(e);
+        return entrySet;
     }
-    return entrySet;
-}
-
 }

@@ -22,7 +22,7 @@ public class ServicoFacade implements IServico{
         return this.servicos;
     }
 
-    public void criarNovoServicoEAgendar(int numServiço, int funcResponsavel, String matricula, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico, FuncFacade f) {
+    public void criarNovoServicoEAgendar(int numServiço, int numCheckUp, int numFicha, int funcResponsavel, String matricula, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico, FuncFacade f) {
         Funcionario mecanicoMenosOcupado = null;
         int menorNumeroServicos = 0;
 
@@ -39,7 +39,7 @@ public class ServicoFacade implements IServico{
             }
         }
         if (mecanicoMenosOcupado != null) {
-            Servico novoServico = new Servico(numServiço, funcResponsavel, matricula, custServiço, estado, horaInicio, horaFim, sms, tipoServico);
+            Servico novoServico = new Servico(numServiço, numCheckUp, numFicha, funcResponsavel, matricula, custServiço, estado, horaInicio, horaFim, sms, tipoServico);
             servicos.put(numServiço, novoServico);
 
             novoServico.setHoraInicio(horaInicio);

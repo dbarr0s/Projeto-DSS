@@ -17,7 +17,7 @@ public class CheckUpFacade implements ICheckUp{
         this.checkups = CheckUpDAO.getInstance(); 
     }
 
-    public void criarNovoCheckUpEAgendar(int numCheckUp, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, Estado estado, Map<Integer, Servico> servicosAExecutar, FuncFacade f) {
+    public void criarNovoCheckUpEAgendar(int numCheckUp, int numFicha, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, Estado estado, Map<Integer, Servico> servicosAExecutar, FuncFacade f) {
         Funcionario mecanicoMenosOcupado = null;
         int menorNumeroServicos = 0;
 
@@ -35,7 +35,7 @@ public class CheckUpFacade implements ICheckUp{
         }
 
         if (mecanicoMenosOcupado != null) {
-            CheckUp novoCheckUp = new CheckUp(numCheckUp, funcResponsavel, matricula, dataCheckUp, estado, servicosAExecutar);
+            CheckUp novoCheckUp = new CheckUp(numCheckUp, numFicha,funcResponsavel, matricula, dataCheckUp, estado, servicosAExecutar);
             checkups.put(numCheckUp, novoCheckUp);
 
             novoCheckUp.setDataCheckUp(dataCheckUp);

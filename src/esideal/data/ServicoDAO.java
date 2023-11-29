@@ -22,12 +22,13 @@ public class ServicoDAO implements Map<Integer, Servico>{
         private static ServicoDAO singleton = null;
 
     public ServicoDAO(){
-        try{
-            Connection connection = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
+        try{ Connection connection = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
             Statement stm = connection.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS servicos(" + 
                         "NumServico INT NOT NULL AUTO_INCREMENT, " +
-                        "FuncResponsvel INT NOT NULL, " +
+                        "NumCheckUp INT NOT NULL AUTO_INCREMENT, " +
+                        "NumFicha INT NOT NULL AUTO_INCREMENT," +
+                        "FuncResponsavel INT NOT NULL, " +
                         "Matricula VARCHAR(50) NOT NULL, " +
                         "CustoServico FLOAT NOT NULL, " +
                         "Estado VARCHAR(50) NOT NULL, " +
@@ -35,6 +36,8 @@ public class ServicoDAO implements Map<Integer, Servico>{
                         "HFim DATETIME NOT NULL, " +
                         "sms VARCHAR(100) NOT NULL, " +
                         "TipoServico VARCHAR(50) NOT NULL, " +
+                        "FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), " +
+                        "FOREIGN KEY (NumCheckUp) REFERENCES checkups(NumCheckUp), " +
                         "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(FuncResponsavel), " +
                         "FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), " +
                         "PRIMARY KEY (NumServico));";
@@ -105,7 +108,9 @@ public class ServicoDAO implements Map<Integer, Servico>{
              ResultSet rs = stm.executeQuery("SELECT * FROM servicos WHERE NumServico='"+key+"'")) {
             if(rs.next()){
                 int numServico = rs.getInt("NumServico");
-                int funcResponsvel = rs.getInt("FuncResponsvel");
+                int numCheckUp = rs.getInt("NumCheckUp");
+                int numFicha = rs.getInt("NumFicha");
+                int funcResponsvel = rs.getInt("FuncResponsavel");
                 String matricula = rs.getString("Matricula");
                 Float custoServico = rs.getFloat("CustoServico");
                 String estado = rs.getString("Estado");
@@ -119,7 +124,7 @@ public class ServicoDAO implements Map<Integer, Servico>{
                 LocalDateTime l1 = hFim.toLocalDateTime();
                 TipoServico t = TipoServico.valueOf(tipoServico);
 
-                s = new Servico(numServico, funcResponsvel, matricula, custoServico, e, l, l1, sms, t);
+                s = new Servico(numServico, numCheckUp, numFicha, funcResponsvel, matricula, custoServico, e, l, l1, sms, t);
             }
         } catch (SQLException e) {
             // Database error!
@@ -133,17 +138,19 @@ public class ServicoDAO implements Map<Integer, Servico>{
     public Servico put(Integer key, Servico value) {
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
              Statement stm = conn.createStatement()) {
-            try (PreparedStatement pstm = conn.prepareStatement("INSERT INTO servicos (NumServico,FuncResponsvel,Matricula,CustoServico,Estado,HInicio,HFim,sms,TipoServico) VALUES (?, ?, ?, ?, ?)")){
+            try (PreparedStatement pstm = conn.prepareStatement("INSERT INTO servicos (NumServico,NumCheckUp,NumFicha,FuncResponsavel,Matricula,CustoServico,Estado,HInicio,HFim,sms,TipoServico) VALUES (?, ?, ?, ?, ?)")){
                 pstm.setInt(1,value.getNumServiço());
-                pstm.setInt(2,value.getFuncResponsavel());
-                pstm.setString(3, value.getMatricula());
-                pstm.setFloat(4, value.getCustServiço());
-                pstm.setString(5, value.getEstado().toString());
-                pstm.setTimestamp(6, Timestamp.valueOf(value.getHoraInicio()));
-                pstm.setTimestamp(7, Timestamp.valueOf(value.getHoraFim()));
-                pstm.setString(8, value.getSms());
-                pstm.setString(9, value.getTipoServico().toString());
-                
+                pstm.setInt(2,value.getNumCheckUp());
+                pstm.setInt(3,value.getNumFicha());
+                pstm.setInt(4,value.getFuncResponsavel());
+                pstm.setString(5, value.getMatricula());
+                pstm.setFloat(6, value.getCustServiço());
+                pstm.setString(7, value.getEstado().toString());
+                pstm.setTimestamp(8, Timestamp.valueOf(value.getHoraInicio()));
+                pstm.setTimestamp(9, Timestamp.valueOf(value.getHoraFim()));
+                pstm.setString(10, value.getSms());
+                pstm.setString(11, value.getTipoServico().toString());
+
                 pstm.executeUpdate(); 
             }
         }catch (SQLException e) {
@@ -218,22 +225,8 @@ public class ServicoDAO implements Map<Integer, Servico>{
              ResultSet rs = stm.executeQuery("SELECT * FROM servicos")) { // Seleciona todas as colunas da tabela veiculos
             while (rs.next()) {
                 int numServico = rs.getInt("NumServico");
-                int funcResponsvel = rs.getInt("FuncResponsvel");
-                String matricula = rs.getString("Matricula");
-                Float custoServico = rs.getFloat("CustoServico");
-                String estado = rs.getString("Estado");
-                Timestamp hInicio = rs.getTimestamp("HInicio");
-                Timestamp hFim = rs.getTimestamp("HFim");
-                String sms = rs.getString("sms");
-                String tipoServico = rs.getString("TipoServico");
-
-                Estado e = Estado.valueOf(estado);
-                LocalDateTime l = hInicio.toLocalDateTime();
-                LocalDateTime l1 = hFim.toLocalDateTime();
-                TipoServico t = TipoServico.valueOf(tipoServico);
-
-                Servico s = new Servico(numServico, funcResponsvel, matricula, custoServico, e, l, l1, sms, t);
-                res.add(s);
+                Servico s = this.get(numServico);
+                res.add(s);  
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -249,23 +242,7 @@ public class ServicoDAO implements Map<Integer, Servico>{
             ResultSet rs = stm.executeQuery("SELECT * FROM servicos")) { // Seleciona todas as colunas da tabela veiculos
             while (rs.next()) {
                 int numServico = rs.getInt("NumServico");
-                int funcResponsvel = rs.getInt("FuncResponsvel");
-                String matricula = rs.getString("Matricula");
-                Float custoServico = rs.getFloat("CustoServico");
-                String estado = rs.getString("Estado");
-                Timestamp hInicio = rs.getTimestamp("HInicio");
-                Timestamp hFim = rs.getTimestamp("HFim");
-                String sms = rs.getString("sms");
-                String tipoServico = rs.getString("TipoServico");
-
-                Estado e = Estado.valueOf(estado);
-                LocalDateTime l = hInicio.toLocalDateTime();
-                LocalDateTime l1 = hFim.toLocalDateTime();
-                TipoServico t = TipoServico.valueOf(tipoServico);
-
-                Servico s = new Servico(numServico, funcResponsvel, matricula, custoServico, e, l, l1, sms, t);
-                Entry<Integer, Servico> entry = new AbstractMap.SimpleEntry<>(numServico, s);
-                entrySet.add(entry);
+                entrySet.add(new AbstractMap.SimpleEntry<>(numServico, this.get(numServico)));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

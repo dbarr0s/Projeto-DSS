@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public class Servico {
     private int numServiço;
+    private int numCheckUp;
+    private int numFicha;
     private int funcResponsavel;
     private String matricula;
     private Float custServiço;
@@ -16,8 +18,10 @@ public class Servico {
 
     /*CONSTRUTORES*/
     
-    public Servico(int numServiço, int funcResponsavel, String matricula, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico) {
+    public Servico(int numServiço, int numCheckUp, int numFicha, int funcResponsavel, String matricula, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico) {
         this.numServiço = numServiço;
+        this.numCheckUp = numCheckUp;
+        this.numFicha = numFicha;
         this.funcResponsavel = funcResponsavel;
         this.matricula = matricula;
         this.custServiço = custServiço;
@@ -30,6 +34,8 @@ public class Servico {
 
     public Servico(Servico s) {
         this.numServiço = s.getNumServiço();
+        this.numCheckUp = s.getNumCheckUp();
+        this.numFicha = s.getNumFicha();
         this.funcResponsavel = s.getFuncResponsavel();
         this.matricula = s.getMatricula();
         this.custServiço = s.getCustServiço();
@@ -44,6 +50,14 @@ public class Servico {
 
     public int getNumServiço(){
         return this.numServiço;
+    }
+
+    public int getNumCheckUp(){
+        return this.numCheckUp;
+    }
+
+    public int getNumFicha() {
+        return this.numFicha;
     }
 
     public int getFuncResponsavel(){
@@ -105,6 +119,8 @@ public class Servico {
         }
         Servico s = (Servico) o;
         return numServiço == s.numServiço &&
+        numCheckUp == s.numCheckUp &&
+        numFicha == s.numFicha &&
         funcResponsavel == s.funcResponsavel &&
         matricula == s.matricula &&
         Objects.equals(custServiço, s.custServiço) &&
@@ -118,6 +134,8 @@ public class Servico {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Nº do Serviço: ").append(numServiço).append("\n");
+        sb.append("Nº do Check-Up associado (pode ser null): ").append(numCheckUp).append("\n");
+        sb.append("Nº da Ficha associada: ").append(numFicha).append("\n");
         sb.append("Funcionário responsável: ").append(funcResponsavel).append("\n");
         sb.append("Matrícula do Veículo: ").append(matricula).append("\n");
         sb.append("Custo do Serviço: ").append(custServiço).append("\n");

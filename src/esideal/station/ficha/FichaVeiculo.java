@@ -7,6 +7,7 @@ import esideal.station.servico.Servico;
 
 public class FichaVeiculo {
     private int numFicha;
+    private String matricula;
     private String nomeCliente;
     private String nomeVeiculo;
     private Map<Integer, Servico> servicos;
@@ -14,8 +15,9 @@ public class FichaVeiculo {
 
     /*CONSTRUTORES*/    
 
-    public FichaVeiculo(int numFicha, String nomeCliente, String nomeVeiculo, Map<Integer, Servico> servicos, Map<Integer, CheckUp> checkups){
+    public FichaVeiculo(int numFicha, String matricula,String nomeCliente, String nomeVeiculo, Map<Integer, Servico> servicos, Map<Integer, CheckUp> checkups){
         this.numFicha = numFicha;
+        this.matricula = matricula;
         this.nomeCliente = nomeCliente;
         this.nomeVeiculo = nomeVeiculo;
         this.servicos = servicos;
@@ -24,6 +26,7 @@ public class FichaVeiculo {
 
     public FichaVeiculo(FichaVeiculo f){
         this.numFicha = f.getNumFicha();
+        this.matricula = f.getMatricula();
         this.nomeCliente = f.getNomeCliente();
         this.nomeVeiculo = f.getNomeVeiculo();
         this.servicos = f.getServicos();
@@ -34,6 +37,10 @@ public class FichaVeiculo {
 
     public int getNumFicha(){
         return this.numFicha;
+    }
+
+    public String getMatricula() {
+        return this.matricula;
     }
 
     public String getNomeCliente(){
@@ -67,6 +74,7 @@ public class FichaVeiculo {
         }
         FichaVeiculo f = (FichaVeiculo) o;
         return nomeCliente == f.nomeCliente &&
+        matricula == f.matricula &&
         numFicha == f.numFicha &&
         nomeVeiculo == f.nomeVeiculo;
     }
@@ -74,6 +82,7 @@ public class FichaVeiculo {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Nº da Ficha: ").append(numFicha).append("\n");
+        sb.append("Matrícula do Veículo: ").append(matricula).append("\n");
         sb.append("Dono do Veículo: ").append(nomeCliente).append("\n");
         sb.append("Veículo: ").append(nomeVeiculo).append("\n");
         sb.append("Serviços do veículo: ").append(servicos.keySet()).append("\n");

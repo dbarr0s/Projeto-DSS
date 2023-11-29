@@ -9,6 +9,7 @@ import esideal.station.servico.Servico;
 
 public class CheckUp {
     private int numeroCheckUp;
+    private int numFicha;
     private int funcResponsavel;
     private String matricula;
     private LocalDateTime dataCheckUp;
@@ -17,8 +18,9 @@ public class CheckUp {
 
     /*CONSTRUTORES*/
 
-    public CheckUp(int numeroCheckUp, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, Estado estado, Map<Integer, Servico> servAExecutar) {
+    public CheckUp(int numeroCheckUp, int numFicha,int funcResponsavel, String matricula, LocalDateTime dataCheckUp, Estado estado, Map<Integer, Servico> servAExecutar) {
         this.numeroCheckUp = numeroCheckUp;
+        this.numFicha = numFicha;
         this.funcResponsavel = funcResponsavel;
         this.matricula = matricula;
         this.dataCheckUp = dataCheckUp;
@@ -28,6 +30,7 @@ public class CheckUp {
 
     public CheckUp(CheckUp c) {
         this.numeroCheckUp = c.getNumCheckUp();
+        this.numFicha = c.getNumFicha();
         this.funcResponsavel = c.getFuncResponsavel();
         this.matricula = c.getMatricula();
         this.dataCheckUp = c.getDataCheckUp();
@@ -39,6 +42,10 @@ public class CheckUp {
 
     public int getNumCheckUp(){
         return this.numeroCheckUp;
+    }
+
+    public int getNumFicha() {
+        return this.numFicha;
     }
 
     public int getFuncResponsavel(){
@@ -83,7 +90,9 @@ public class CheckUp {
             return false;
         }
         CheckUp c = (CheckUp) o;
-        return matricula == c.matricula &&
+        return numeroCheckUp == c.numeroCheckUp &&
+        numFicha == c.numFicha &&
+        matricula == c.matricula &&
         Objects.equals(dataCheckUp, c.dataCheckUp) &&
         funcResponsavel == c.funcResponsavel && 
         estado == c.estado;
@@ -92,6 +101,7 @@ public class CheckUp {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Nº do Check-Up: ").append(numeroCheckUp).append("\n");
+        sb.append("Nº da Ficha a que pertence: ").append(numFicha).append("\n");
         sb.append("Check-Up para Veículo: ").append(matricula).append("\n");
         sb.append("Data do Check-Up: ").append(dataCheckUp).append("\n");
         sb.append("Funcionário Responsável: ").append(funcResponsavel).append("\n");

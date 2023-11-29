@@ -2,12 +2,12 @@ package esideal.ui;
 
 import java.util.Scanner;
 
-import esideal.station.*;
+//import esideal.station.*;
 
 public class UI {
     static Scanner s = new Scanner(System.in);
     static int logado;
-
+/* 
     public static void menuLogin(StationFacade estacao)
     {
         int IDFuncionario;
@@ -30,5 +30,5 @@ public class UI {
 
     public static void start(StationFacade estacao){
         menuLogin(estacao);
-    }
+    }*/
 }
