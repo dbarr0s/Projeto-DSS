@@ -1,7 +1,9 @@
 package esideal.station.servico;
+
+import esideal.station.servico.*;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 
 public class Servico {
     private int numServiço;

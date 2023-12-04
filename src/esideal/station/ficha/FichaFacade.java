@@ -15,6 +15,10 @@ public class FichaFacade implements IFichaVeiculo{
     public FichaFacade(){
         this.fichas = FichaDAO.getInstance(); 
     }
+
+    public Map<Integer, FichaVeiculo> getFichas() {
+        return this.fichas;
+    }
     
     public boolean existeFicha(int numeroFicha) {
         return fichas.containsKey(numeroFicha);

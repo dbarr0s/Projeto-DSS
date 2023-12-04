@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-import esideal.station.checkup.CheckUp;
-import esideal.station.servico.Servico;
-import esideal.station.servico.TipoServico;
+import esideal.station.checkup.*;
+import esideal.station.servico.*;
+import esideal.station.funcionario.*;
 
 public class Funcionario {
     private int cartaoFuncionario;
