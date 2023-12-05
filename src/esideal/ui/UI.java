@@ -27,10 +27,10 @@ public class UI {
 
         if (funcionarios.funcionarioExiste(IDFuncionario)) {
             funcionario = funcionarios.getFuncionarios().get(IDFuncionario);
-            System.out.println("Bem vindo " + funcionario.getCartaoFuncionario());
+            System.out.println("\u001B[32mBem vindo " + funcionario.getCartaoFuncionario() + "\u001B[42m");
             menu();
         } else {
-            System.out.println("Funcionário não encontrado");
+            System.out.println("\u001B[31mFuncionário não encontrado\u001B[41m");
             menuLogin();
         }
     }
@@ -56,17 +56,41 @@ public class UI {
         String tipoServico = s.next();
         TipoServico tipoServicoEnum = TipoServico.valueOf(tipoServico);
         servicos.criarNovoServicoEAgendar(idServico, idCheckup, idFicha, IDFuncionario, matricula, custo, estado, horaInicioServico, horaFimServico, sms, tipoServicoEnum, funcionarios);
+        System.out.println("\u001B[32mServiço criado com sucesso\u001B[42m");
+    }
+
+    public static void mostrarServicos() {
+        System.out.println("----------SERVIÇOS----------");
+        for (Servico servico : servicos.getServicos().values()) {
+            System.out.println("ID do serviço: " + servico.getNumServiço());
+            System.out.println("ID do checkup: " + servico.getNumCheckUp());
+            System.out.println("ID da ficha de veiculo: " + servico.getNumFicha());
+            System.out.println("ID do funcionário responsável: " + servico.getFuncResponsavel());
+            System.out.println("Matricula do veiculo: " + servico.getMatricula());
+            System.out.println("Custo do serviço: " + servico.getCustServiço());
+            System.out.println("Estado do serviço: " + servico.getEstado());
+            System.out.println("Hora de inicio do serviço: " + servico.getHoraInicio());
+            System.out.println("Hora de fim do serviço: " + servico.getHoraFim());
+            System.out.println("SMS: " + servico.getSms());
+            System.out.println("Tipo de serviço: " + servico.getTipoServico());
+            System.out.println("----------------------------");
+        }
     }
     
     public static void menu() {
         System.out.println("1. Novo serviço"); 
-        System.out.println("1. Serviços");
+        System.out.println("2. Serviços");
 
         String opcao = s.next();
 
         switch (opcao) {
             case "1":
                 menuCriarServico();
+                menu();
+                break;
+
+            case "2":
+                mostrarServicos();
                 menu();
                 break;
 
