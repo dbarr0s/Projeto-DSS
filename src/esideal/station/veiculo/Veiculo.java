@@ -2,8 +2,6 @@ package esideal.station.veiculo;
 
 import java.util.Objects;
 
-import esideal.station.veiculo.*;
-
 public class Veiculo {
     private String nome;
     private String nomeDono;

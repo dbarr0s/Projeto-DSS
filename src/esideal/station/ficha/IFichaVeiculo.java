@@ -1,11 +1,8 @@
 package esideal.station.ficha;
 
-import esideal.station.checkup.CheckUp;
-import esideal.station.checkup.CheckUpFacade;
-import esideal.station.servico.Servico;
-import esideal.station.servico.ServicoFacade;
+import java.util.Map;
 
 public interface IFichaVeiculo {
-    void registoCheckUpFicha(int numCheckUp, CheckUp c, CheckUpFacade cf);
-    void registoServicosFicha(int numServico, Servico s, ServicoFacade sf);   
+    boolean existeFicha(int numeroFicha);
+    Map<Integer, FichaVeiculo> getFichas();
 }

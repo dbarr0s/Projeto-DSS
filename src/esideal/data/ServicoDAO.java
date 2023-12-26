@@ -1,12 +1,6 @@
 package esideal.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -19,15 +13,21 @@ import esideal.station.servico.Servico;
 import esideal.station.servico.TipoServico;
 
 public class ServicoDAO implements Map<Integer, Servico>{
-        private static ServicoDAO singleton = null;
+    private static ServicoDAO singleton = null;
+
+    /**
+     * Construtor da classe ServicoDAO.
+     * Cria a tabela 'servicos' no banco de dados se ela não existir.
+     * A tabela 'servicos' possui informações sobre os serviços prestados.
+     * @throws NullPointerException Se ocorrer um erro ao criar a tabela ou estabelecer a conexão com o banco de dados.
+     */
 
     public ServicoDAO(){
         try{ Connection connection = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
             Statement stm = connection.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS servicos(" + 
                         "NumServico INT NOT NULL AUTO_INCREMENT, " +
-                        "NumCheckUp INT NOT NULL AUTO_INCREMENT, " +
-                        "NumFicha INT NOT NULL AUTO_INCREMENT," +
+                        "NumFicha INT NOT NULL," +
                         "FuncResponsavel INT NOT NULL, " +
                         "Matricula VARCHAR(50) NOT NULL, " +
                         "CustoServico FLOAT NOT NULL, " +
@@ -37,8 +37,7 @@ public class ServicoDAO implements Map<Integer, Servico>{
                         "sms VARCHAR(100) NOT NULL, " +
                         "TipoServico VARCHAR(50) NOT NULL, " +
                         "FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), " +
-                        "FOREIGN KEY (NumCheckUp) REFERENCES checkups(NumCheckUp), " +
-                        "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(FuncResponsavel), " +
+                        "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(Cartao), " +
                         "FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), " +
                         "PRIMARY KEY (NumServico));";
             stm.executeUpdate(sql);
@@ -49,12 +48,23 @@ public class ServicoDAO implements Map<Integer, Servico>{
         }
     }
 
+    /**
+     * Obtém a instância única da classe ServicoDAO seguindo o padrão Singleton.
+     * @return A instância única da classe ServicoDAO.
+     */
+
     public static ServicoDAO getInstance(){
         if(ServicoDAO.singleton == null){
             ServicoDAO.singleton = new ServicoDAO();
         }
         return ServicoDAO.singleton;
     }
+
+    /**
+     * Retorna o número de registos na tabela 'servicos'.
+     * @return O número de registos na tabela 'servicos'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public int size() {
@@ -73,10 +83,22 @@ public class ServicoDAO implements Map<Integer, Servico>{
         return i;
     }
 
+    /**
+     * Verifica se a tabela 'servicos' está vazia.
+     * @return true se a tabela 'servicos' estiver vazia, false caso contrário.
+     */
+
     @Override
     public boolean isEmpty() {
         return this.size() == 0;
     }
+
+    /**
+     * Verifica se a chave especificada está presente na tabela 'servicos'.
+     * @param key A chave a ser verificada na tabela 'servicos'.
+     * @return true se a chave estiver presente na tabela 'servicos', false caso contrário.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public boolean containsKey(Object key) {
@@ -84,7 +106,7 @@ public class ServicoDAO implements Map<Integer, Servico>{
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
              Statement stm = conn.createStatement();
              ResultSet rs =
-                     stm.executeQuery("SELECT Id FROM servicos WHERE NumServico='"+key+"'")) {
+                     stm.executeQuery("SELECT NumServico FROM servicos WHERE NumServico='"+key+"'")) {
             r = rs.next();
         } catch (SQLException e) {
             // Database error!
@@ -94,11 +116,24 @@ public class ServicoDAO implements Map<Integer, Servico>{
         return r;
     }
 
+    /**
+     * Verifica se o valor especificado está presente na tabela 'servicos'.
+     * @param value O valor a ser verificado na tabela 'servicos'.
+     * @return true se o valor estiver presente na tabela 'servicos', false caso contrário.
+     */
+
     @Override
     public boolean containsValue(Object value) {
         Servico s = (Servico) value;
         return this.containsKey(s.getNumServiço());
     }
+
+    /**
+     * Obtém o serviço associado à chave especificada da tabela 'servicos'.
+     * @param key A chave cujo valor associado será obtido.
+     * @return O serviço associado à chave especificada, ou null se a chave não estiver presente.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Servico get(Object key) {
@@ -108,7 +143,6 @@ public class ServicoDAO implements Map<Integer, Servico>{
              ResultSet rs = stm.executeQuery("SELECT * FROM servicos WHERE NumServico='"+key+"'")) {
             if(rs.next()){
                 int numServico = rs.getInt("NumServico");
-                int numCheckUp = rs.getInt("NumCheckUp");
                 int numFicha = rs.getInt("NumFicha");
                 int funcResponsvel = rs.getInt("FuncResponsavel");
                 String matricula = rs.getString("Matricula");
@@ -124,7 +158,7 @@ public class ServicoDAO implements Map<Integer, Servico>{
                 LocalDateTime l1 = hFim.toLocalDateTime();
                 TipoServico t = TipoServico.valueOf(tipoServico);
 
-                s = new Servico(numServico, numCheckUp, numFicha, funcResponsvel, matricula, custoServico, e, l, l1, sms, t);
+                s = new Servico(numServico, numFicha, funcResponsvel, matricula, custoServico, e, l, l1, sms, t);
             }
         } catch (SQLException e) {
             // Database error!
@@ -132,35 +166,103 @@ public class ServicoDAO implements Map<Integer, Servico>{
             throw new NullPointerException(e.getMessage());
         }
         return s;
-    }
+    }    
+
+    /**
+     * Insere um novo serviço na tabela 'servicos'.
+     * @param key A chave do serviço a ser inserido.
+     * @param value O serviço a ser inserido na tabela 'servicos'.
+     * @return O serviço inserido.
+     */
 
     @Override
     public Servico put(Integer key, Servico value) {
+        String sql = "INSERT INTO servicos " +
+                     "(NumServico, NumFicha, FuncResponsavel, Matricula, CustoServico, Estado, HInicio, HFim, sms, TipoServico) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
-             Statement stm = conn.createStatement()) {
-            try (PreparedStatement pstm = conn.prepareStatement("INSERT INTO servicos (NumServico,NumCheckUp,NumFicha,FuncResponsavel,Matricula,CustoServico,Estado,HInicio,HFim,sms,TipoServico) VALUES (?, ?, ?, ?, ?)")){
-                pstm.setInt(1,value.getNumServiço());
-                pstm.setInt(2,value.getNumCheckUp());
-                pstm.setInt(3,value.getNumFicha());
-                pstm.setInt(4,value.getFuncResponsavel());
-                pstm.setString(5, value.getMatricula());
-                pstm.setFloat(6, value.getCustServiço());
-                pstm.setString(7, value.getEstado().toString());
-                pstm.setTimestamp(8, Timestamp.valueOf(value.getHoraInicio()));
-                pstm.setTimestamp(9, Timestamp.valueOf(value.getHoraFim()));
-                pstm.setString(10, value.getSms());
-                pstm.setString(11, value.getTipoServico().toString());
-
-                pstm.executeUpdate(); 
-            }
-        }catch (SQLException e) {
-            // Database error!
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    
+            pstmt.setInt(1, value.getNumServiço());
+            pstmt.setInt(2, value.getNumFicha());
+            pstmt.setInt(3, value.getFuncResponsavel());
+            pstmt.setString(4, value.getMatricula());
+            pstmt.setFloat(5, value.getCustServiço());
+            pstmt.setString(6, value.getEstado().toString());
+            pstmt.setTimestamp(7, Timestamp.valueOf(value.getHoraInicio()));
+            pstmt.setTimestamp(8, Timestamp.valueOf(value.getHoraFim()));
+            pstmt.setString(9, value.getSms());
+            pstmt.setString(10, value.getTipoServico().toString());
+    
+            pstmt.executeUpdate();
+    
+        } catch (SQLException e) {
             e.printStackTrace();
-            throw new NullPointerException(e.getMessage());
+           // throw new NullPointerException(e.getMessage());
         }
         return value;
     }
 
+    /**
+     * Atualiza o estado de um serviço na tabela 'servicos'.
+     * @param servico O serviço que contém o estado a ser atualizado.
+     */
+
+    public void atualizarEstadoServico(Servico servico) {
+        try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement("UPDATE servicos SET estado = ? WHERE numServico = ?")) {
+            
+            stmt.setString(1, servico.getEstado().toString());
+            stmt.setInt(2, servico.getNumServiço());
+    
+            int rowsUpdated = stmt.executeUpdate();
+    
+            if (rowsUpdated > 0) {
+                System.out.println("Estado do serviço atualizado com sucesso!");
+            } else {
+                System.out.println("Não foi possível atualizar o estado do serviço.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Ocorreu um erro ao atualizar o estado do serviço:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Atualiza o SMS de um serviço na tabela 'servicos'.
+     * @param servico O serviço que contém o SMS a ser atualizado.
+     */
+    
+    public void atualizarSMSServico(Servico servico) {
+        String sql = "UPDATE servicos SET sms = ? WHERE NumServico = ?";
+
+        try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, servico.getSms());
+            stmt.setInt(2, servico.getNumServiço());
+
+            int rowsUpdated = stmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("SMS do serviço atualizado com sucesso!");
+            } else {
+                System.out.println("Não foi possível atualizar o SMS do serviço.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Ocorreu um erro ao atualizar o SMS do serviço:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Remove um serviço da tabela 'servicos' com base na chave especificada.
+     * @param key A chave do serviço a ser removido.
+     * @return O serviço removido, ou null se a chave não estiver presente.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
+    
     @Override
     public Servico remove(Object key) {
         Servico s = null;
@@ -179,6 +281,11 @@ public class ServicoDAO implements Map<Integer, Servico>{
         return s;
     }
 
+    /**
+     * Adiciona todos os serviços contidos no mapa especificado na tabela 'servicos'.
+     * @param m O mapa que contém os serviços a serem adicionados na tabela 'servicos'.
+     */
+
     @Override
     public void putAll(Map<? extends Integer, ? extends Servico> m) {
     //Este método recebe (Map) como argumento, onde as chaves são do tipo String e os valores são do tipo Veiculo
@@ -186,6 +293,11 @@ public class ServicoDAO implements Map<Integer, Servico>{
             this.put(s.getNumServiço(), s.clone());
         }
     }
+
+    /**
+     * Remove todos os registos da tabela 'servicos'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public void clear() {
@@ -198,6 +310,12 @@ public class ServicoDAO implements Map<Integer, Servico>{
             throw new NullPointerException(e.getMessage());
         }
     }
+
+    /**
+     * Retorna um conjunto que contém as chaves (numServico) da tabela 'servicos'.
+     * @return Um conjunto que contém as chaves da tabela 'servicos'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Set<Integer> keySet() {
@@ -217,6 +335,12 @@ public class ServicoDAO implements Map<Integer, Servico>{
         return res;
     }
 
+    /**
+     * Retorna uma coleção que contém todos os serviços presentes na tabela 'servicos'.
+     * @return Uma coleção que contém todos os serviços da tabela 'servicos'.
+     * @throws RuntimeException Se ocorrer um erro ao executar a consulta SQL.
+     */
+
     @Override
     public Collection<Servico> values() {
         Collection<Servico> res = new HashSet<>();
@@ -233,6 +357,12 @@ public class ServicoDAO implements Map<Integer, Servico>{
         }
         return res;
     }
+
+    /**
+     * Retorna um conjunto de pares chave-valor que representa a entrada de cada serviço na tabela 'servicos'.
+     * @return Um conjunto de pares chave-valor que representa a entrada de cada serviço na tabela 'servicos'.
+     * @throws RuntimeException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Set<Entry<Integer, Servico>> entrySet() {

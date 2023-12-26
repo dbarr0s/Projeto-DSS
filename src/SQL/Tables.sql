@@ -1,0 +1,77 @@
+DROP SCHEMA esideal;
+
+CREATE SCHEMA esideal;
+USE esideal;
+
+CREATE TABLE IF NOT EXISTS clientes( 
+Nome VARCHAR(150) NOT NULL,
+Morada VARCHAR(100) NOT NULL, 
+NIF INT NOT NULL, 
+Telefone INT NOT NULL, 
+Email VARCHAR(100) NOT NULL,
+Voucher BIT,
+PRIMARY KEY (Nome));
+
+CREATE TABLE IF NOT EXISTS veiculos( 
+Matricula VARCHAR(50) NOT NULL, 
+Dono VARCHAR(50) NOT NULL, 
+NomeVeic VARCHAR(50) NOT NULL, 
+TVeiculo VARCHAR(50) NOT NULL, 
+TMotor VARCHAR(50) NOT NULL, 
+FOREIGN KEY (Dono) REFERENCES clientes(Nome), 
+PRIMARY KEY (Matricula));
+
+CREATE TABLE IF NOT EXISTS funcionarios(
+Cartao INT NOT NULL, 
+EstadoTurno VARCHAR(50) NOT NULL, 
+HEntrada DATETIME NOT NULL, 
+HSaida DATETIME NOT NULL, 
+TipoFunc VARCHAR(100) NOT NULL, 
+Posto VARCHAR(100) NOT NULL, 
+PRIMARY KEY (Cartao));
+
+CREATE TABLE IF NOT EXISTS turnos(
+NumTurno INT NOT NULL AUTO_INCREMENT,
+Cartao INT NOT NULL, 
+HEntrada DATETIME NOT NULL, 
+HSaida DATETIME NOT NULL, 
+FOREIGN KEY (Cartao) REFERENCES funcionarios(Cartao), 
+PRIMARY KEY (NumTurno));
+
+CREATE TABLE IF NOT EXISTS fichas(
+NumFicha INT NOT NULL, 
+Matricula VARCHAR(50) NOT NULL, 
+NomeDono VARCHAR(100) NOT NULL, 
+NomeVeiculo VARCHAR(50) NOT NULL, 
+FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), 
+FOREIGN KEY (NomeDono) REFERENCES clientes(Nome), 
+PRIMARY KEY (NumFicha));
+
+CREATE TABLE IF NOT EXISTS checkups( 
+NumCheckUp INT NOT NULL AUTO_INCREMENT,
+NumFicha INT NOT NULL,
+FuncResponsavel INT NOT NULL, 
+Matricula VARCHAR(50) NOT NULL, 
+DataCheckUp DATETIME NOT NULL, 
+DataFimCheckUp DATETIME NOT NULL, 
+Estado VARCHAR(50) NOT NULL, 
+FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), 
+FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(Cartao), 
+FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), 
+PRIMARY KEY (NumCheckUp));
+
+CREATE TABLE IF NOT EXISTS servicos( 
+NumServico INT NOT NULL AUTO_INCREMENT,
+NumFicha INT NOT NULL,
+FuncResponsavel INT NOT NULL, 
+Matricula VARCHAR(50) NOT NULL, 
+CustoServico FLOAT NOT NULL, 
+Estado VARCHAR(50) NOT NULL, 
+HInicio DATETIME NOT NULL, 
+HFim DATETIME NOT NULL, 
+sms VARCHAR(100) NOT NULL, 
+TipoServico VARCHAR(50) NOT NULL, 
+FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), 
+FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(Cartao), 
+FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula),                         
+PRIMARY KEY (NumServico));

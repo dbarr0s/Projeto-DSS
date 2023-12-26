@@ -1,12 +1,9 @@
 package esideal.station.funcionario;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Objects;
 
-import esideal.station.checkup.*;
 import esideal.station.servico.*;
-import esideal.station.funcionario.*;
 
 public class Funcionario {
     private int cartaoFuncionario;
@@ -15,20 +12,16 @@ public class Funcionario {
     private LocalDateTime horaSaida;
     private TipoFuncionario tipoFuncionario;
     private TipoServico postosMecanico;
-    private Map<Integer, Servico> servDoDia;
-    private Map<Integer, CheckUp> checkUpDoDia;
 
     /*CONSTRUTORES*/
 
-    public Funcionario(int cartaoFuncionario, EstadoTurno estadoTurno, LocalDateTime horaEntrada, LocalDateTime horaSaida, TipoFuncionario tipoFuncionario, TipoServico postosMecanico, Map<Integer, Servico> servDoDia, Map<Integer, CheckUp> checkUpDoDia){
+    public Funcionario(int cartaoFuncionario, EstadoTurno estadoTurno, LocalDateTime horaEntrada, LocalDateTime horaSaida, TipoFuncionario tipoFuncionario, TipoServico postosMecanico){
         this.cartaoFuncionario = cartaoFuncionario;
         this.estadoTurno = estadoTurno;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
         this.tipoFuncionario = tipoFuncionario;
         this.postosMecanico = postosMecanico;
-        this.servDoDia = servDoDia;
-        this.checkUpDoDia = checkUpDoDia;
     }
 
     public Funcionario(Funcionario f) {
@@ -38,8 +31,6 @@ public class Funcionario {
         this.horaSaida = f.getHoraSaida();
         this.tipoFuncionario = f.getTipoFuncionario();
         this.postosMecanico = f.getPostosMecanico();
-        this.servDoDia = f.getServDoDia();
-        this.checkUpDoDia = f.getCheckUpDoDia();
     }
 
     /*GETTERS E SETTERS*/
@@ -76,14 +67,6 @@ public class Funcionario {
         return this.postosMecanico;
     }
 
-    public Map<Integer, Servico> getServDoDia(){
-        return this.servDoDia;
-    }
-
-    public Map<Integer, CheckUp> getCheckUpDoDia() {
-        return this.checkUpDoDia;
-    }
-
     /*OUTROS MÉTODOS*/
 
     public Funcionario clone(){
@@ -114,8 +97,6 @@ public class Funcionario {
         sb.append("Hora de saída do turno: ").append(horaSaida).append("\n");
         sb.append("Tipo de Funcionário: ").append(tipoFuncionario).append("\n");
         sb.append("Tipo de Mecânico: ").append(postosMecanico).append("\n");
-        sb.append("Serviços do Dia: ").append(servDoDia).append("\n");
-        sb.append("Check-up do Dia: ").append(checkUpDoDia).append("\n");
         return sb.toString();
     }
 }

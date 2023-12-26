@@ -1,10 +1,13 @@
 package esideal.station.funcionario;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import esideal.data.FuncionarioDAO;
-
+import esideal.station.checkup.CheckUp;
+import esideal.station.checkup.CheckUpFacade;
+import esideal.station.servico.Servico;
+import esideal.station.servico.ServicoFacade;
 
 public class FuncFacade implements IFuncionário{
     private Map<Integer, Funcionario> funcionarios; 
@@ -26,52 +29,30 @@ public class FuncFacade implements IFuncionário{
         return false;
     }  
 
-    public void iniciarTurno(int cartaoFuncionario, LocalDateTime horaEntrada) {
-        Funcionario funcionario = funcionarios.get(cartaoFuncionario);
-        if (funcionario != null) {
-
-        LocalDateTime horaPrevista = funcionario.getHoraEntrada();
-
-        if (horaEntrada.isAfter(horaPrevista)) {
-            System.out.println("Aviso de atraso para o funcionário " + cartaoFuncionario + ". Hora de entrada prevista: " + horaPrevista);
-            penalizarAtraso(cartaoFuncionario, horaEntrada);
-            funcionario.setEstadoTurno(EstadoTurno.INICIADO);
-        }
-        funcionario.setEstadoTurno(EstadoTurno.INICIADO);
-        System.out.println("Turno iniciado para o funcionário " + cartaoFuncionario + " às " + horaEntrada);
-        }
-    }
-
-    public void penalizarAtraso(int cartaoFuncionario, LocalDateTime horaEntrada) {
-        Funcionario funcionario = funcionarios.get(cartaoFuncionario);
-        if (funcionario != null) {
-            LocalDateTime horaPrevista = funcionario.getHoraEntrada();
+    public Map<Integer, Servico> obterServicosDoFuncionario(int idFuncionario) {
+        Map<Integer, Servico> servicosDoFuncionario = new HashMap<>();
+        ServicoFacade s = new ServicoFacade();
     
-            long minutosAtraso = java.time.Duration.between(horaPrevista, horaEntrada).toMinutes();
-    
-            if (minutosAtraso > 0) {
-                LocalDateTime novaHoraSaida = funcionario.getHoraSaida().plusMinutes(minutosAtraso);
-                System.out.println("Funcionário " + cartaoFuncionario + " penalizado com " + minutosAtraso + " minutos de atraso. Nova hora de saída: " + novaHoraSaida);
-            } else {
-                System.out.println("Funcionário " + cartaoFuncionario + " chegou pontualmente. Sem penalidades.");
+        for (Servico servico : s.getServicos().values()) {
+            if (servico.getFuncResponsavel() == idFuncionario) {
+                servicosDoFuncionario.put(servico.getNumServiço(), servico.clone());
             }
-        } else {
-            System.out.println("Funcionário com cartão " + cartaoFuncionario + " não encontrado.");
         }
+        return servicosDoFuncionario;
     }
     
-    public void finalizarTurno(int cartaoFuncionario, LocalDateTime horaEntrada, LocalDateTime horaSaida) {
-        Funcionario funcionario = funcionarios.get(cartaoFuncionario);
-        if (funcionario != null) {
-            LocalDateTime horaPrevista = funcionario.getHoraEntrada();
-
-             if (horaEntrada.isAfter(horaPrevista)) {
-                    System.out.println("Aviso de atraso para o funcionário " + cartaoFuncionario + ". Hora de entrada prevista: " + horaPrevista);
-                    penalizarAtraso(cartaoFuncionario, horaEntrada);
-                    funcionario.setEstadoTurno(EstadoTurno.TERMINADO);
+    public Map<Integer, CheckUp> obterCheckUpsDoFuncionario(int idFuncionario) {
+        Map<Integer, CheckUp> checkUpsDoFuncionario = new HashMap<>();
+        CheckUpFacade c = new CheckUpFacade();
+    
+        for (CheckUp checkUp : c.getCheckUps().values()) {
+            if (checkUp.getFuncResponsavel() == idFuncionario) {
+                checkUpsDoFuncionario.put(checkUp.getNumCheckUp(), checkUp.clone());
             }
-            funcionario.setEstadoTurno(EstadoTurno.TERMINADO);
-            System.out.println("Turno finalizado para o funcionário " + cartaoFuncionario + " às " + horaSaida);
         }
+    
+        return checkUpsDoFuncionario;
     }
+    
+
 }

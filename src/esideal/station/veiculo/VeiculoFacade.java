@@ -13,11 +13,16 @@ public class VeiculoFacade implements IVeiculos{
         this.veiculos = VeiculoDAO.getInstance(); 
     }
 
+    public Map<String, Veiculo> getVeiculos(){
+        return this.veiculos;
+    }
+
     public boolean veicExiste(String matricula){   
         return veiculos.containsKey(matricula);
     }
 
-    public Cliente encontrarClientePorVeiculo(String matricula, ClienteFacade c){
+    public Cliente encontrarClientePorVeiculo(String matricula){
+        ClienteFacade c = new ClienteFacade();
         for (Cliente cliente : c.getClientes().values()) {
             if (cliente.getVeiculos().containsKey(matricula)) {
                 return cliente;

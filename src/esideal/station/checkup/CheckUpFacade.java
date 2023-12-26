@@ -4,11 +4,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import esideal.data.CheckUpDAO;
+import esideal.station.cliente.Cliente;
+import esideal.station.cliente.ClienteFacade;
+import esideal.station.ficha.FichaFacade;
 import esideal.station.funcionario.FuncFacade;
-import esideal.station.funcionario.Funcionario;
-import esideal.station.funcionario.TipoFuncionario;
 import esideal.station.servico.Estado;
 import esideal.station.servico.Servico;
+import esideal.station.veiculo.VeiculoFacade;
 
 public class CheckUpFacade implements ICheckUp{
     private Map<Integer, CheckUp> checkups;  
@@ -17,65 +19,68 @@ public class CheckUpFacade implements ICheckUp{
         this.checkups = CheckUpDAO.getInstance(); 
     }
 
-    public void criarNovoCheckUpEAgendar(int numCheckUp, int numFicha, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, Estado estado, Map<Integer, Servico> servicosAExecutar, FuncFacade f) {
-        Funcionario mecanicoMenosOcupado = null;
-        int menorNumeroServicos = 0;
+    public void criarNovoCheckUpEAgendar(int numCheckUp, int numFicha, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, LocalDateTime datafim, Estado estado) {
+        FichaFacade f1 = new FichaFacade();
+        FuncFacade f2 = new FuncFacade();
 
-        for (Funcionario f1 : f.getFuncionarios().values()) {
-            if (f1.getTipoFuncionario() == TipoFuncionario.MECANICO) {
-                int numeroServicos = f1.getServDoDia().size();
-                int numeroCheckUp = f1.getCheckUpDoDia().size();
-                int total = numeroCheckUp + numeroServicos;
+        CheckUp novoCheckUp = new CheckUp(numCheckUp, numFicha,funcResponsavel, matricula, dataCheckUp, datafim, estado);
 
-                if (total < menorNumeroServicos) {
-                    menorNumeroServicos = total;
-                    mecanicoMenosOcupado = f1;
+        novoCheckUp.setDataCheckUp(dataCheckUp);
+
+        // Verificando conflito de horário com os serviços do funcionário
+        for (Servico servico : f2.obterServicosDoFuncionario(funcResponsavel).values()) {
+            if (servico.getEstado() == Estado.AGENDADO || servico.getEstado() == Estado.EM_ANDAMENTO) {
+                LocalDateTime inicioServico = servico.getHoraInicio();
+                LocalDateTime fimServico = servico.getHoraFim();
+                
+                if (dataCheckUp.isBefore(LocalDateTime.now()) || dataCheckUp.isEqual(inicioServico) || (dataCheckUp.isAfter(inicioServico) && dataCheckUp.isBefore(fimServico))) {
+                    System.out.println("Conflito de horário com um serviço agendado ou em andamento ou horário.");
+                    return; // Cancela o agendamento do check-up
+                }//METER HORAS DOS TURNOS DOS FUNC. NOS IFS
+            }
+        }
+
+        // Verificando conflito de horário com os check-ups do funcionário
+        for (CheckUp checkup : f2.obterCheckUpsDoFuncionario(funcResponsavel).values()) {
+            if (checkup.getEstado() == Estado.AGENDADO || checkup.getEstado() == Estado.EM_ANDAMENTO) {
+                LocalDateTime inicioCheckUp = checkup.getDataCheckUp();
+                LocalDateTime fimCheckUp = checkup.getDataFim();
+                
+                if (dataCheckUp.isBefore(LocalDateTime.now()) || dataCheckUp.isEqual(inicioCheckUp) || (dataCheckUp.isAfter(inicioCheckUp) && dataCheckUp.isBefore(fimCheckUp))) {
+                    System.out.println("Conflito de horário com um serviço agendado ou em andamento ou horário.");
+                    return; // Cancela o agendamento do check-up
                 }
             }
         }
 
-        if (mecanicoMenosOcupado != null) {
-            CheckUp novoCheckUp = new CheckUp(numCheckUp, numFicha,funcResponsavel, matricula, dataCheckUp, estado, servicosAExecutar);
-            checkups.put(numCheckUp, novoCheckUp);
+        if (dataCheckUp.getHour() < f2.getFuncionarios().get(funcResponsavel).getHoraEntrada().getHour() || dataCheckUp.getHour() > f2.getFuncionarios().get(funcResponsavel).getHoraSaida().getHour()){
+            System.out.println("Conflito de horário com um serviço agendado ou em andamento ou horário.");
+            return; // Cancela o agendamento do check-up
+        }
 
-            novoCheckUp.setDataCheckUp(dataCheckUp);
-            checkups.put(novoCheckUp.getNumCheckUp(), novoCheckUp);
-            mecanicoMenosOcupado.getCheckUpDoDia().put(numCheckUp, novoCheckUp);
+        checkups.put(numCheckUp, novoCheckUp.clone());
+        f1.getFichas().get(numFicha).getCheckups().put(numCheckUp, novoCheckUp.clone());
 
-            System.out.println("Novo check-up criado e serviços agendados com sucesso com número: " + numCheckUp);
+        System.out.println("Novo check-up criado agendado com sucesso");
+    }
+
+    public void enviarMensagemCliente(Cliente cliente, String mensagem) {
+        System.out.println("Mensagem enviada para " + cliente.getNome() + ": " + mensagem);
+    }
+
+    public void notificarClienteFimServico(int numCheckUp, VeiculoFacade v, ClienteFacade c1) {
+        CheckUp c = checkups.get(numCheckUp);
+        if (c != null) {
+            String matricula = c.getMatricula();
+            Cliente cliente = v.encontrarClientePorVeiculo(matricula);
+            if (cliente != null) {
+                String mensagem = "O serviço " + numCheckUp + " foi concluído com sucesso.";
+                enviarMensagemCliente(cliente, mensagem);
+            } else {
+                System.out.println("Cliente não encontrado para o veículo associado ao serviço " + numCheckUp);
+            }
         } else {
-            System.out.println("Não foi possível encontrar um mecânico disponível para o check-up.");
-        }
-    }
-
-    //ALTERAR//
-
-    public void iniciarCheckUp(int numCheckUp, LocalDateTime data){
-        for(Map.Entry<Integer, CheckUp> entry : checkups.entrySet()){
-            if (entry.getKey() == numCheckUp && entry.getValue().getDataCheckUp() == data) {
-                CheckUp c = checkups.get(numCheckUp);
-                c.setEstado(Estado.EM_ANDAMENTO);
-                checkups.put(c.getNumCheckUp(), c);
-                System.out.println("Check-up " + numCheckUp + " iniciado com sucesso.");
-            } else {
-                System.out.println("O check-up com o número " + numCheckUp + " não foi encontrado.");
-            }
-        }
-    }
-
-    public void finalizarCheckUp(int numCheckUp, Map<Integer, Servico> servAExecutar){
-        for(Map.Entry<Integer, CheckUp> entry : checkups.entrySet()){
-            if (entry.getKey() == numCheckUp) {
-                CheckUp c = checkups.get(numCheckUp);
-                c.setEstado(Estado.CONCLUÍDO);
-                for (Servico s : servAExecutar.values()) {
-                    c.getServAExecutar().put(s.getNumServiço(), s.clone());
-                }
-                checkups.put(c.getNumCheckUp(), c);
-                System.out.println("Check-up " + numCheckUp + " finalizado com sucesso.");
-            } else {
-                System.out.println("O check-up com o número " + numCheckUp + " não foi encontrado.");
-            }
+            System.out.println("O serviço com o número " + numCheckUp + " não foi encontrado.");
         }
     }
 

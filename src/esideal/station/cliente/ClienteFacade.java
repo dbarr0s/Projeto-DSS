@@ -6,14 +6,14 @@ import esideal.data.ClienteDAO;
 
 public class ClienteFacade implements ICliente{
 
-    private Map<Integer, Cliente> clientes;
+    private Map<String, Cliente> clientes;
 
     public ClienteFacade(){
         this.clientes = ClienteDAO.getInstance(); 
     }
 
-    public boolean clienteValido(Integer NIF){
-        return clientes.containsKey(NIF);
+    public boolean clienteValido(String nome){
+        return clientes.containsKey(nome);
     }
 
     public boolean clienteTemVeiculos(Cliente c){
@@ -21,7 +21,7 @@ public class ClienteFacade implements ICliente{
         return true;
     }
 
-    public Map<Integer, Cliente> getClientes() {
+    public Map<String, Cliente> getClientes() {
         return this.clientes;
     }
     

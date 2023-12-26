@@ -2,22 +2,24 @@ package esideal.data;
 
 import java.util.AbstractMap;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.sql.*;
 import java.time.LocalDateTime;
 
-import esideal.station.checkup.CheckUp;
 import esideal.station.funcionario.EstadoTurno;
 import esideal.station.funcionario.Funcionario;
 import esideal.station.funcionario.TipoFuncionario;
-import esideal.station.servico.Servico;
 import esideal.station.servico.TipoServico;
 
 public class FuncionarioDAO implements Map<Integer, Funcionario>{
     private static FuncionarioDAO singleton = null;
+
+    /**
+     * Construtor da classe FuncionarioDAO. Cria a tabela 'funcionarios' se não existir no banco de dados.
+     * @throws NullPointerException Se ocorrer um erro ao executar a criação da tabela ou ao se conectar ao banco de dados.
+     */
 
     public FuncionarioDAO(){
         try{
@@ -32,38 +34,6 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
                         "Posto VARCHAR(100) NOT NULL, " +
                         "PRIMARY KEY (Cartao));";
             stm.executeUpdate(sql);
-
-            sql = "CREATE TABLE IF NOT EXISTS checkups(" + 
-                "NumCheckUp INT NOT NULL AUTO_INCREMENT, " +
-                "NumFicha INT NOT NULL AUTO_INCREMENT," +
-                "FuncResponsavel INT NOT NULL, " +
-                "Matricula VARCHAR(50) NOT NULL, " +
-                "DataCheckUp DATETIME NOT NULL, " +
-                "Estado VARCHAR(50) NOT NULL, " +
-                "FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), " +
-                "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(FuncResponsavel), " +
-                "FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), " +
-                "PRIMARY KEY (NumCheckUp));";
-            stm.executeUpdate(sql);
-            
-            sql = "CREATE TABLE IF NOT EXISTS servicos(" + 
-                "NumServico INT NOT NULL AUTO_INCREMENT, " +
-                "NumCheckUp INT NOT NULL AUTO_INCREMENT, " +
-                "NumFicha INT NOT NULL AUTO_INCREMENT," +
-                "FuncResponsavel INT NOT NULL, " +
-                "Matricula VARCHAR(50) NOT NULL, " +
-                "CustoServico FLOAT NOT NULL, " +
-                "Estado VARCHAR(50) NOT NULL, " +
-                "HInicio DATETIME NOT NULL, " +
-                "HFim DATETIME NOT NULL, " +
-                "sms VARCHAR(100) NOT NULL, " +
-                "TipoServico VARCHAR(50) NOT NULL, " +
-                "FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), " +
-                "FOREIGN KEY (NumCheckUp) REFERENCES checkups(NumCheckUp), " +
-                "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(FuncResponsavel), " +
-                "FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), " +
-                "PRIMARY KEY (NumServico));";
-            stm.executeUpdate(sql);
         }
         catch(SQLException e){
             e.printStackTrace();
@@ -71,12 +41,23 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         }
     }
 
+    /**
+     * Obtém a instância única (singleton) da classe FuncionarioDAO.
+     * @return A instância única da classe FuncionarioDAO.
+     */
+
     public static FuncionarioDAO getInstance(){
         if(FuncionarioDAO.singleton == null){
             FuncionarioDAO.singleton = new FuncionarioDAO();
         }
         return FuncionarioDAO.singleton;
     }
+
+    /**
+     * Obtém o número de funcionários na tabela 'funcionarios'.
+     * @return O número de funcionários na tabela 'funcionarios'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public int size() {
@@ -95,10 +76,22 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         return i;
     }
 
+    /**
+     * Verifica se a tabela 'funcionarios' está vazia.
+     * @return true se a tabela 'funcionarios' estiver vazia, false caso contrário.
+     */
+
     @Override
     public boolean isEmpty() {
         return this.size() == 0;
     }
+
+    /**
+     * Verifica se um determinado cartão está presente na tabela 'funcionarios'.
+     * @param key O cartão a ser verificado.
+     * @return true se o cartão estiver na tabela 'funcionarios', caso contrário, retorna false.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public boolean containsKey(Object key) {
@@ -106,7 +99,7 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
              Statement stm = conn.createStatement();
              ResultSet rs =
-                     stm.executeQuery("SELECT Id FROM funcionarios WHERE Cartao='"+key+"'")) {
+                     stm.executeQuery("SELECT Cartao FROM funcionarios WHERE Cartao='"+key+"'")) {
             r = rs.next();
         } catch (SQLException e) {
             // Database error!
@@ -116,11 +109,25 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         return r;
     }
 
+    /**
+     * Verifica se um determinado funcionário está presente na tabela 'funcionarios'.
+     * @param value O funcionário a ser verificado.
+     * @return true se o funcionário estiver na tabela 'funcionarios', caso contrário, retorna false.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
+
     @Override
     public boolean containsValue(Object value) {
         Funcionario f = (Funcionario) value;
         return this.containsKey(f.getCartaoFuncionario());
     }
+
+    /**
+     * Obtém um funcionário da tabela 'funcionarios' com base no cartão.
+     * @param key O cartão do funcionário a ser obtido.
+     * @return O funcionário correspondente ao cartão especificado, ou null se não encontrado.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Funcionario get(Object key) {
@@ -141,27 +148,8 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
                 LocalDateTime l1 = saida.toLocalDateTime();
                 TipoFuncionario tf = TipoFuncionario.valueOf(tFunc);
                 TipoServico e1 = TipoServico.valueOf(posto);
-
-                Map<Integer, Servico> servicos = new HashMap<>();
-                String sql = "SELECT * FROM servicos WHERE FuncResponsavel='"+key+"';";
-
-                try(ResultSet r = stm.executeQuery(sql)){
-                    while(r.next()){
-                        servicos.put(r.getInt("NumServico"), ServicoDAO.getInstance().get(r.getInt("FuncResponsavel")));
-                    }
-                }
-
-                Map<Integer, CheckUp> checkups = new HashMap<>();
-                sql = "SELECT * FROM checkups WHERE FuncResponsavel='"+key+"';";
-
-                try(ResultSet r = stm.executeQuery(sql)){
-                    while(r.next()){
-                        checkups.put(r.getInt("NumCheckUp"), CheckUpDAO.getInstance().get(r.getInt("FuncResponsavel")));
-                    }
-                }
                 
-                
-                f = new Funcionario(cartao, e, l, l1, tf, e1, servicos, checkups);
+                f = new Funcionario(cartao, e, l, l1, tf, e1);
             }
         } catch (SQLException e) {
             // Database error!
@@ -171,58 +159,44 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         return f;
     }
 
+    /**
+     * Adiciona um novo funcionário à tabela 'funcionarios'.
+     * @param key O cartão do funcionário a ser adicionado.
+     * @param value O funcionário a ser adicionado.
+     * @return O funcionário adicionado.
+     * @throws NullPointerException Se ocorrer um erro ao executar a inserção SQL.
+     */
+
     @Override
     public Funcionario put(Integer key, Funcionario value) {
+        String funcionarioQuery = "INSERT INTO funcionarios (Cartao,EstadoTurno,HEntrada,HSaida,TipoFunc,Posto) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+    
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
-             Statement stm = conn.createStatement()) {
-            try (PreparedStatement pstm = conn.prepareStatement("INSERT INTO funcionarios (Cartao,EstadoTurno,HEntrada,HSaida,TipoFunc,Posto) VALUES (?, ?, ?, ?, ?)")){
-                pstm.setInt(1,value.getCartaoFuncionario());
-                pstm.setString(2,value.getEstadoTurno().toString());
-                pstm.setTimestamp(3, Timestamp.valueOf(value.getHoraEntrada()));
-                pstm.setTimestamp(4, Timestamp.valueOf(value.getHoraSaida()));
-                pstm.setString(5, value.getTipoFuncionario().toString());      
-                pstm.setString(6, value.getPostosMecanico().toString());      
-
-                Map<Integer, Servico> servAExecutar = value.getServDoDia();
-                Map<Integer, CheckUp> checkUpsAExecutar = value.getCheckUpDoDia();
-                pstm.executeUpdate();     
-            
-                try (PreparedStatement pstm1 = conn.prepareStatement("INSERT INTO servicos (NumServico,NumCheckUp,NumFicha,FuncResponsvel,Matricula,CustoServico,Estado,HInicio,HFim,sms,TipoServico) VALUES (?, ?, ?, ?, ?)")){
-                    for(Servico s : servAExecutar.values()){
-                        pstm1.setInt(1,s.getNumServiço());
-                        pstm1.setInt(2,s.getNumCheckUp());
-                        pstm1.setInt(3,s.getNumFicha());
-                        pstm1.setInt(4,s.getFuncResponsavel());
-                        pstm1.setString(5, s.getMatricula());
-                        pstm1.setFloat(6, s.getCustServiço());
-                        pstm1.setString(7, s.getEstado().toString());
-                        pstm1.setTimestamp(8, Timestamp.valueOf(s.getHoraInicio()));
-                        pstm1.setTimestamp(9, Timestamp.valueOf(s.getHoraFim()));
-                        pstm1.setString(10, s.getSms());
-                        pstm1.setString(11, s.getTipoServico().toString());           
-                        pstm1.executeUpdate(); 
-                    }
-                }          
-                try(PreparedStatement pstm2 = conn.prepareStatement("INSERT INTO checkups (NumCheckUp,NumFicha,FuncResponsavel,Matricula,DataCheckUp,Estado) VALUES (?, ?, ?, ?, ?)")){
-                    for(CheckUp c : checkUpsAExecutar.values()){
-                        pstm2.setInt(1,c.getNumCheckUp());
-                        pstm2.setInt(2,c.getNumFicha());
-                        pstm2.setInt(3,c.getFuncResponsavel());
-                        pstm2.setString(4, c.getMatricula());
-                        pstm2.setTimestamp(5, Timestamp.valueOf(c.getDataCheckUp()));
-                        pstm2.setString(6, c.getEstado().toString()); 
-                        pstm2.execute(); 
-                    }
-                } 
-            }
-        }catch (SQLException e) {
-            // Database error!
+             PreparedStatement pstmtFuncionario = conn.prepareStatement(funcionarioQuery)) {
+    
+            pstmtFuncionario.setInt(1, value.getCartaoFuncionario());
+            pstmtFuncionario.setString(2, value.getEstadoTurno().toString());
+            pstmtFuncionario.setTimestamp(3, Timestamp.valueOf(value.getHoraEntrada()));
+            pstmtFuncionario.setTimestamp(4, Timestamp.valueOf(value.getHoraSaida()));
+            pstmtFuncionario.setString(5, value.getTipoFuncionario().toString());
+            pstmtFuncionario.setString(6, value.getPostosMecanico().toString());
+            pstmtFuncionario.executeUpdate();
+    
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new NullPointerException(e.getMessage());
         }
         return value;
     }
 
+    /**
+     * Remove um funcionário da tabela 'funcionarios' com base no cartão.
+     * @param key O cartão do funcionário a ser removido.
+     * @return O funcionário removido, ou null se não encontrado.
+     * @throws NullPointerException Se ocorrer um erro ao executar a remoção SQL.
+     */
+    
     @Override
     public Funcionario remove(Object key) {
 		Funcionario f = this.get(key);
@@ -231,8 +205,6 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
             conn.setAutoCommit(false);
 
             stm.executeUpdate("DELETE FROM funcionarios WHERE Cartao='"+key+"';");
-            stm.executeUpdate("DELETE FROM servicos WHERE FuncResponsavel='"+key+"';");
-            stm.executeUpdate("DELETE FROM checkups WHERE FuncResponsavel='"+key+"';");
 
             conn.commit();
         } catch (Exception e) {
@@ -243,12 +215,23 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         return f;
     }
 
+    /**
+     * Adiciona vários funcionários à tabela 'funcionarios'.
+     * @param m O mapa que tem os funcionários a serem adicionados.
+     * @throws NullPointerException Se ocorrer um erro ao executar a inserção SQL.
+     */
+
     @Override
     public void putAll(Map<? extends Integer, ? extends Funcionario> m) {
 		for(Funcionario f : m.values()) {
             this.put(f.getCartaoFuncionario(), f.clone());
         }
     }
+
+    /**
+     * Remove todos os registos da tabela 'funcionarios'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a remoção SQL.
+     */
 
     @Override
     public void clear() {
@@ -261,6 +244,12 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
             throw new NullPointerException(e.getMessage());
         }
     }
+
+    /**
+     * Retorna um conjunto contendo todos os cartões dos funcionários na tabela 'funcionarios'.
+     * @return Um conjunto contendo todos os cartões dos funcionários na tabela 'funcionarios'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Set<Integer> keySet() {
@@ -280,6 +269,12 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         return res;
     }
 
+    /**
+     * Retorna uma coleção que contém todos os funcionários na tabela 'funcionarios'.
+     * @return Uma coleção que contém todos os funcionários na tabela 'funcionarios'.
+     * @throws RuntimeException Se ocorrer um erro ao executar a consulta SQL.
+     */
+
     @Override
     public Collection<Funcionario> values() {
 		Collection<Funcionario> res = new HashSet<>();
@@ -296,6 +291,12 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
         }
         return res;
     }
+
+    /**
+     * Retorna um conjunto de pares (chave, valor) representando os cartões e os funcionários correspondentes na tabela 'funcionarios'.
+     * @return Um conjunto de pares (chave, valor) representando os cartões e os funcionários correspondentes na tabela 'funcionarios'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Set<Entry<Integer, Funcionario>> entrySet() {
@@ -317,5 +318,4 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
     
         return entries;
     }
-
 }

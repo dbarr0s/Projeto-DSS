@@ -1,12 +1,6 @@
 package esideal.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +13,14 @@ import esideal.station.ficha.FichaVeiculo;
 import esideal.station.servico.Servico;
 
 public class FichaDAO implements Map<Integer, FichaVeiculo>{
-        private static FichaDAO singleton = null;
+    private static FichaDAO singleton = null;
+
+    /**
+     * Construtor da classe FichaDAO.
+     * Inicializa a conexão com o banco de dados e cria as tabelas 'fichas', 'checkups' e 'servicos', se ainda não existirem.
+     *
+     * @throws NullPointerException Se ocorrer um erro durante a criação das tabelas na base de dados.
+     */
 
     public FichaDAO(){
         try{
@@ -31,27 +32,27 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
                         "NomeDono VARCHAR(100) NOT NULL, " +
                         "NomeVeiculo VARCHAR(50) NOT NULL, " +
                         "FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), " +
-                        "FOREIGN KEY (Dono) REFERENCES clientes(Dono), " +
+                        "FOREIGN KEY (NomeDono) REFERENCES clientes(Nome), " +
                         "PRIMARY KEY (NumFicha));";
             stm.executeUpdate(sql);
 
             sql = "CREATE TABLE IF NOT EXISTS checkups(" + 
                 "NumCheckUp INT NOT NULL AUTO_INCREMENT, " +
-                "NumFicha INT NOT NULL AUTO_INCREMENT," +
+                "NumFicha INT NOT NULL," +
                 "FuncResponsavel INT NOT NULL, " +
                 "Matricula VARCHAR(50) NOT NULL, " +
                 "DataCheckUp DATETIME NOT NULL, " +
+                "DataFimCheckUp DATETIME NOT NULL, " +
                 "Estado VARCHAR(50) NOT NULL, " +
                 "FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), " +
-                "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(FuncResponsavel), " +
+                "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(Cartao), " +
                 "FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), " +
                 "PRIMARY KEY (NumCheckUp));";
             stm.executeUpdate(sql);
             
             sql = "CREATE TABLE IF NOT EXISTS servicos(" + 
                 "NumServico INT NOT NULL AUTO_INCREMENT, " +
-                "NumCheckUp INT NOT NULL AUTO_INCREMENT, " +
-                "NumFicha INT NOT NULL AUTO_INCREMENT," +
+                "NumFicha INT NOT NULL," +
                 "FuncResponsavel INT NOT NULL, " +
                 "Matricula VARCHAR(50) NOT NULL, " +
                 "CustoServico FLOAT NOT NULL, " +
@@ -61,8 +62,7 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
                 "sms VARCHAR(100) NOT NULL, " +
                 "TipoServico VARCHAR(50) NOT NULL, " +
                 "FOREIGN KEY (NumFicha) REFERENCES fichas(NumFicha), " +
-                "FOREIGN KEY (NumCheckUp) REFERENCES checkups(NumCheckUp), " +
-                "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(FuncResponsavel), " +
+                "FOREIGN KEY (FuncResponsavel) REFERENCES funcionarios(Cartao), " +
                 "FOREIGN KEY (Matricula) REFERENCES veiculos(Matricula), " +
                 "PRIMARY KEY (NumServico));";
             stm.executeUpdate(sql);
@@ -73,12 +73,23 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         }
     }
 
+    /**
+     * Obtém a instância única da classe FichaDAO (Singleton).
+     * @return A instância única da classe FichaDAO.
+     */
+
     public static FichaDAO getInstance(){
         if(FichaDAO.singleton == null){
             FichaDAO.singleton = new FichaDAO();
         }
         return FichaDAO.singleton;
     }
+
+    /**
+     * Retorna o número de registos na tabela 'fichas'.
+     * @return O número de registos na tabela 'fichas'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public int size() {
@@ -97,10 +108,22 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         return i;
     }
 
+    /**
+     * Verifica se a tabela 'fichas' está vazia.
+     * @return true se a tabela 'fichas' estiver vazia, false caso contrário.
+     */
+
     @Override
     public boolean isEmpty() {
         return this.size() == 0;
     }
+
+    /**
+     * Verifica se a tabela 'fichas' contém uma chave específica.
+     * @param key A chave a ser verificada na tabela 'fichas'.
+     * @return true se a chave estiver presente na tabela 'fichas', false caso contrário.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public boolean containsKey(Object key) {
@@ -108,7 +131,7 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
              Statement stm = conn.createStatement();
              ResultSet rs =
-                     stm.executeQuery("SELECT Id FROM fichas WHERE NumFicha='"+key+"'")) {
+                     stm.executeQuery("SELECT NumFicha FROM fichas WHERE NumFicha='"+key+"'")) {
             r = rs.next();
         } catch (SQLException e) {
             // Database error!
@@ -118,11 +141,25 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         return r;
     }
 
+    /**
+     * Verifica se a tabela 'fichas' contém um determinado valor.
+     * @param value O valor a ser verificado na tabela 'fichas'.
+     * @return true se o valor estiver presente na tabela 'fichas', false caso contrário.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
+
     @Override
     public boolean containsValue(Object value) {
         FichaVeiculo f = (FichaVeiculo) value;
         return this.containsKey(f.getNumFicha());
     }
+
+    /**
+     * Obtém um objeto FichaVeiculo da tabela 'fichas' com base na chave especificada.
+     * @param key A chave do objeto a ser obtido na tabela 'fichas'.
+     * @return O objeto FichaVeiculo correspondente à chave especificada ou null se não for encontrado.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public FichaVeiculo get(Object key) {
@@ -163,55 +200,74 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         return f;
     }
 
+    /**
+     * Insere um objeto FichaVeiculo na tabela 'fichas'.
+     * @param key A chave do objeto FichaVeiculo a ser inserido na tabela 'fichas'.
+     * @param value O objeto FichaVeiculo a ser inserido na tabela 'fichas'.
+     * @return O objeto FichaVeiculo inserido na tabela 'fichas'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
+
     @Override
     public FichaVeiculo put(Integer key, FichaVeiculo value) {
+        String fichaQuery = "INSERT INTO fichas (NumFicha,Matricula,NomeDono,NomeVeiculo) "+
+                            "VALUES (?, ?, ?, ?)";
+    
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
-             Statement stm = conn.createStatement()) {
-            try (PreparedStatement pstm = conn.prepareStatement("INSERT INTO fichas (NumFicha,Matricula,NomeDono,NomeVeiculo) VALUES (?, ?, ?, ?, ?)")){
-                pstm.setInt(1,value.getNumFicha());
-                pstm.setString(2,value.getMatricula());
-                pstm.setString(3,value.getNomeCliente());
-                pstm.setString(4,value.getNomeVeiculo()); 
-
-                Map<Integer, Servico> servAExecutar = value.getServicos();
-                Map<Integer, CheckUp> checkUpsAExecutar = value.getCheckups();
-                pstm.executeUpdate();     
-            
-                try (PreparedStatement pstm1 = conn.prepareStatement("INSERT INTO servicos (NumServico,NumCheckUp,NumFicha,FuncResponsvel,Matricula,CustoServico,Estado,HInicio,HFim,sms,TipoServico) VALUES (?, ?, ?, ?, ?)")){
-                    for(Servico s : servAExecutar.values()){
-                        pstm1.setInt(1,s.getNumServiço());
-                        pstm1.setInt(2,s.getNumCheckUp());
-                        pstm1.setInt(3,s.getNumFicha());
-                        pstm1.setInt(4,s.getFuncResponsavel());
-                        pstm1.setString(5, s.getMatricula());
-                        pstm1.setFloat(6, s.getCustServiço());
-                        pstm1.setString(7, s.getEstado().toString());
-                        pstm1.setTimestamp(8, Timestamp.valueOf(s.getHoraInicio()));
-                        pstm1.setTimestamp(9, Timestamp.valueOf(s.getHoraFim()));
-                        pstm1.setString(10, s.getSms());
-                        pstm1.setString(11, s.getTipoServico().toString());           
-                        pstm1.executeUpdate(); 
-                    }
-                }          
-                try(PreparedStatement pstm2 = conn.prepareStatement("INSERT INTO checkups (NumCheckUp,NumFicha,FuncResponsavel,Matricula,DataCheckUp,Estado) VALUES (?, ?, ?, ?, ?)")){
-                    for(CheckUp c : checkUpsAExecutar.values()){
-                        pstm2.setInt(1,c.getNumCheckUp());
-                        pstm2.setInt(2,c.getNumFicha());
-                        pstm2.setInt(3,c.getFuncResponsavel());
-                        pstm2.setString(4, c.getMatricula());
-                        pstm2.setTimestamp(5, Timestamp.valueOf(c.getDataCheckUp()));
-                        pstm2.setString(6, c.getEstado().toString()); 
-                        pstm2.execute(); 
-                    }
-                } 
+             PreparedStatement pstmtFicha = conn.prepareStatement(fichaQuery)) {
+    
+            pstmtFicha.setInt(1, value.getNumFicha());
+            pstmtFicha.setString(2, value.getMatricula());
+            pstmtFicha.setString(3, value.getNomeCliente());
+            pstmtFicha.setString(4, value.getNomeVeiculo());
+            pstmtFicha.executeUpdate();
+    
+            // Atualizar os serviços
+            Map<Integer, Servico> servAExecutar = value.getServicos();
+            for (Servico s : servAExecutar.values()) {
+                String servicoQuery = "INSERT INTO servicos (NumServico, NumFicha, FuncResponsavel, Matricula, CustoServico, Estado, HInicio, HFim, sms, TipoServico)" +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+                try (PreparedStatement pstmServicos = conn.prepareStatement(servicoQuery)) {
+                    pstmServicos.setInt(1, s.getNumServiço());
+                    pstmServicos.setInt(2, s.getNumFicha());
+                    pstmServicos.setInt(3, s.getFuncResponsavel());
+                    pstmServicos.setString(4, s.getMatricula());
+                    pstmServicos.setFloat(5, s.getCustServiço());
+                    pstmServicos.setString(6, s.getEstado().toString());
+                    pstmServicos.setTimestamp(7, Timestamp.valueOf(s.getHoraInicio()));
+                    pstmServicos.setTimestamp(8, Timestamp.valueOf(s.getHoraFim()));
+                    pstmServicos.setString(9, s.getSms());
+                    pstmServicos.setString(10, s.getTipoServico().toString());
+    
+                    pstmServicos.executeUpdate();
+                }
             }
-        }catch (SQLException e) {
+    
+            // Atualizar os check-ups
+            Map<Integer, CheckUp> checkUpsAExecutar = value.getCheckups();
+            for (CheckUp c : checkUpsAExecutar.values()) {
+                String checkupQuery = "INSERT INTO checkups (NumCheckUp,NumFicha,FuncResponsavel,Matricula,DataCheckUp,DataFimCheckUp,Estado) "+
+                                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    
+                try (PreparedStatement pstmCheckups = conn.prepareStatement(checkupQuery)) {
+                    pstmCheckups.setInt(1, c.getNumCheckUp());
+                    pstmCheckups.setInt(2, c.getNumFicha());
+                    pstmCheckups.setInt(3, c.getFuncResponsavel());
+                    pstmCheckups.setString(4, c.getMatricula());
+                    pstmCheckups.setTimestamp(5, Timestamp.valueOf(c.getDataCheckUp()));
+                    pstmCheckups.setTimestamp(6, Timestamp.valueOf(c.getDataFim()));
+                    pstmCheckups.setString(7, c.getEstado().toString());
+                    pstmCheckups.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
             // Database error!
             e.printStackTrace();
             throw new NullPointerException(e.getMessage());
         }
         return value;
-    }
+    }    
 
     @Override
     public FichaVeiculo remove(Object key) {
@@ -233,12 +289,23 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         return f;
     }
 
+    /**
+     * Insere todos os elementos da coleção fornecida na tabela 'fichas'.
+     * @param m Map contendo as chaves e valores a serem inseridos na tabela 'fichas'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
+
     @Override
     public void putAll(Map<? extends Integer, ? extends FichaVeiculo> m) {
 		for(FichaVeiculo f : m.values()) {
             this.put(f.getNumFicha(), f.clone());
         }
     }
+
+    /**
+     * Remove todos os registos da tabela 'fichas'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public void clear() {
@@ -251,6 +318,12 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
             throw new NullPointerException(e.getMessage());
         }
     }
+
+    /**
+     * Obtém um conjunto contendo todas as chaves (NumFicha) existentes na tabela 'fichas'.
+     * @return Um conjunto de chaves (NumFicha) da tabela 'fichas'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Set<Integer> keySet() {
@@ -270,6 +343,12 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         return res;
     }
 
+    /**
+     * Obtém uma coleção contendo todos os valores (FichaVeiculo) existentes na tabela 'fichas'.
+     * @return Uma coleção de valores (FichaVeiculo) da tabela 'fichas'.
+     * @throws RuntimeException Se ocorrer um erro ao executar a consulta SQL.
+     */
+
     @Override
     public Collection<FichaVeiculo> values() {
 		Collection<FichaVeiculo> res = new HashSet<>();
@@ -286,6 +365,12 @@ public class FichaDAO implements Map<Integer, FichaVeiculo>{
         }
         return res;
     }
+
+    /**
+     * Obtém um conjunto contendo todas as entradas existentes na tabela 'fichas'.
+     * @return Um conjunto de entradas da tabela 'fichas'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public Set<Entry<Integer, FichaVeiculo>> entrySet() {

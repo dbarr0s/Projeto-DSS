@@ -1,11 +1,6 @@
 package esideal.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,10 +21,10 @@ public class VeiculoDAO implements Map<String, Veiculo>{
             String sql = "CREATE TABLE IF NOT EXISTS veiculos(" + 
                         "Matricula VARCHAR(50) NOT NULL, " +
                         "Dono VARCHAR(50) NOT NULL, " +
-                        "Nome VARCHAR(50) NOT NULL, " +
+                        "NomeVeic VARCHAR(50) NOT NULL, " +
                         "TVeiculo VARCHAR(50) NOT NULL, " +
                         "TMotor VARCHAR(50) NOT NULL, " +
-                        "FOREIGN KEY (Dono) REFERENCES clientes(Dono), " +
+                        "FOREIGN KEY (Dono) REFERENCES clientes(Nome), " +
                         "PRIMARY KEY (Matricula));";
             stm.executeUpdate(sql);
         }
@@ -74,7 +69,7 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
              Statement stm = conn.createStatement();
              ResultSet rs =
-                     stm.executeQuery("SELECT Id FROM veiculos WHERE Matricula='"+key+"'")) {
+                     stm.executeQuery("SELECT Matricula FROM veiculos WHERE Matricula='"+key+"'")) {
             r = rs.next();
         } catch (SQLException e) {
             // Database error!
@@ -100,7 +95,7 @@ public class VeiculoDAO implements Map<String, Veiculo>{
 
                 String matricula = rs.getString("Matricula");
                 String dono = rs.getString("Dono");
-                String nome = rs.getString("Nome");
+                String nome = rs.getString("NomeVeic");
                 String tveiculo = rs.getString("TVeiculo");
                 String tmotor = rs.getString("TMotor");
 
@@ -119,18 +114,21 @@ public class VeiculoDAO implements Map<String, Veiculo>{
 
     @Override
     public Veiculo put(String key, Veiculo value) {
+        String sql = "INSERT INTO veiculos (Matricula, Dono, Nome, TVeiculo, TMotor) " +
+                     "VALUES (?, ?, ?, ?, ?)";
+    
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
-             Statement stm = conn.createStatement()) {
-            try (PreparedStatement pstm = conn.prepareStatement("INSERT INTO veiculos (Matricula,Dono,Nome,TVeiculo,TMotor) VALUES (?, ?, ?, ?, ?)")){
-                pstm.setString(1,value.getMatricula());
-                pstm.setString(2,value.getDono());
-                pstm.setString(3, value.getNome());
-                pstm.setString(4, value.getTipoVeiculo().toString());
-                pstm.setString(5, value.getTipoMotor().toString());
-                pstm.executeUpdate(); 
-            }
-        }catch (SQLException e) {
-            // Database error!
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    
+            pstmt.setString(1, value.getMatricula());
+            pstmt.setString(2, value.getDono());
+            pstmt.setString(3, value.getNome());
+            pstmt.setString(4, value.getTipoVeiculo().toString());
+            pstmt.setString(5, value.getTipoMotor().toString());
+    
+            pstmt.executeUpdate();
+    
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new NullPointerException(e.getMessage());
         }

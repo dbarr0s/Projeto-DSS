@@ -6,4 +6,5 @@ public enum TipoServico {
     ELETRICO,
     HIBRIDO,
     UNIVERSAL,
+    GERENCIA
 }

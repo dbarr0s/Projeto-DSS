@@ -1,9 +1,11 @@
 package esideal.station.veiculo;
 
+import java.util.Map;
+
 import esideal.station.cliente.Cliente;
-import esideal.station.cliente.ClienteFacade;
 
 public interface IVeiculos {
     boolean veicExiste(String matricula);
-    Cliente encontrarClientePorVeiculo(String matricula, ClienteFacade c);
+    Cliente encontrarClientePorVeiculo(String matricula);
+    Map<String, Veiculo> getVeiculos();
 }

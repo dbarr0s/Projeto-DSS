@@ -2,8 +2,6 @@ package esideal.station.veiculo;
 
 public enum TipoVeiculo {
     SUV,
-    SEDAN,
-    CARRINHA,
-    JIPE,
+    CARRO,
     DESPORTIVO
 }

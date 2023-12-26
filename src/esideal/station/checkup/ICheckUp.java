@@ -3,12 +3,14 @@ package esideal.station.checkup;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import esideal.station.funcionario.FuncFacade;
+import esideal.station.cliente.Cliente;
+import esideal.station.cliente.ClienteFacade;
 import esideal.station.servico.Estado;
-import esideal.station.servico.Servico;
+import esideal.station.veiculo.VeiculoFacade;
 
 public interface ICheckUp {
-    void iniciarCheckUp(int numCheckUp, LocalDateTime data);
-    void finalizarCheckUp(int numCheckUp, Map<Integer, Servico> servAExecutar);
-    void criarNovoCheckUpEAgendar(int numCheckUp, int numFicha, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, Estado estado, Map<Integer, Servico> servicosAExecutar, FuncFacade f);
+    Map<Integer, CheckUp> getCheckUps();
+    void enviarMensagemCliente(Cliente cliente, String mensagem);
+    void notificarClienteFimServico(int numCheckUp, VeiculoFacade v, ClienteFacade c);
+    void criarNovoCheckUpEAgendar(int numCheckUp, int numFicha, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, LocalDateTime datafim, Estado estado);
 }
