@@ -22,6 +22,20 @@ public class ServicoFacade implements IServico{
         return this.servicos;
     }
 
+    /**
+     * Cria um novo serviço, verifica conflitos de horário com outros serviços do funcionário e agenda-o.
+     * @param numServiço Número do serviço a ser criado.
+     * @param numFicha Número da ficha associada ao serviço.
+     * @param funcResponsavel Número do funcionário responsável pelo serviço.
+     * @param matricula Matrícula do veículo associado ao serviço.
+     * @param custServiço Custo do serviço.
+     * @param estado Estado do serviço.
+     * @param horaInicio Horário de início do serviço.
+     * @param horaFim Horário de fim do serviço.
+     * @param sms Mensagem do serviço.
+     * @param tipoServico Tipo do serviço.
+     */
+
     public void criarNovoServicoEAgendar(int numServiço, int numFicha, int funcResponsavel, String matricula, Float custServiço, Estado estado, LocalDateTime horaInicio, LocalDateTime horaFim, String sms, TipoServico tipoServico) {
         FichaFacade f1 = new FichaFacade();
         FuncFacade f2 = new FuncFacade();
@@ -64,6 +78,12 @@ public class ServicoFacade implements IServico{
         servicos.put(novoServico.getNumServiço(), novoServico.clone());
         f1.getFichas().get(numFicha).getServicos().put(numServiço, novoServico.clone());
     }
+
+    /**
+     * Finaliza um serviço com base no número do serviço e número do funcionário.
+     * @param numServico Número do serviço a ser finalizado.
+     * @param numFunc Número do funcionário.
+     */
     
     public void finalizarServico(int numServico, int numFunc){
         Servico servico = servicos.get(numServico);
@@ -81,9 +101,22 @@ public class ServicoFacade implements IServico{
         else  System.out.println("Serviço não foi encontrado!");
     }
 
+    /**
+     * Envia uma mensagem para um cliente específico.
+     * @param cliente Cliente para o qual a mensagem será enviada.
+     * @param mensagem Mensagem a ser enviada.
+     */
+
     public void enviarMensagemCliente(Cliente cliente, String mensagem) {
         System.out.println("Mensagem enviada para " + cliente.getNome() + ": " + mensagem);
     }
+
+    /**
+     * Notifica um cliente sobre o término de um serviço.
+     * @param numServico Número do serviço.
+     * @param v Instância de VeiculoFacade.
+     * @param c Instância de ClienteFacade.
+     */
 
     public void notificarClienteFimServico(int numServico, VeiculoFacade v, ClienteFacade c) {
         Servico servico = servicos.get(numServico);

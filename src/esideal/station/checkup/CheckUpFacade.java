@@ -19,6 +19,17 @@ public class CheckUpFacade implements ICheckUp{
         this.checkups = CheckUpDAO.getInstance(); 
     }
 
+    /**
+     * Cria um novo check-up e agenda o serviço, verificando conflitos de horários.
+     * @param numCheckUp Número do check-up.
+     * @param numFicha Número da ficha associada.
+     * @param funcResponsavel ID do funcionário responsável.
+     * @param matricula Matrícula do veículo.
+     * @param dataCheckUp Data do check-up.
+     * @param datafim Data de finalização do check-up.
+     * @param estado Estado do check-up.
+     */
+
     public void criarNovoCheckUpEAgendar(int numCheckUp, int numFicha, int funcResponsavel, String matricula, LocalDateTime dataCheckUp, LocalDateTime datafim, Estado estado) {
         FichaFacade f1 = new FichaFacade();
         FuncFacade f2 = new FuncFacade();
@@ -64,9 +75,22 @@ public class CheckUpFacade implements ICheckUp{
         System.out.println("Novo check-up criado agendado com sucesso");
     }
 
+    /**
+     * Envia uma mensagem para o cliente.
+     * @param cliente Cliente a quem a mensagem será enviada.
+     * @param mensagem Mensagem a ser enviada.
+     */
+
     public void enviarMensagemCliente(Cliente cliente, String mensagem) {
         System.out.println("Mensagem enviada para " + cliente.getNome() + ": " + mensagem);
     }
+
+    /**
+     * Notifica o cliente sobre o fim do serviço associado ao check-up.
+     * @param numCheckUp Número do check-up.
+     * @param v Facade de Veículo.
+     * @param c1 Facade de Cliente.
+     */
 
     public void notificarClienteFimServico(int numCheckUp, VeiculoFacade v, ClienteFacade c1) {
         CheckUp c = checkups.get(numCheckUp);
@@ -80,7 +104,7 @@ public class CheckUpFacade implements ICheckUp{
                 System.out.println("Cliente não encontrado para o veículo associado ao serviço " + numCheckUp);
             }
         } else {
-            System.out.println("O serviço com o número " + numCheckUp + " não foi encontrado.");
+            System.out.println("O check-up com o número " + numCheckUp + " não foi encontrado.");
         }
     }
 

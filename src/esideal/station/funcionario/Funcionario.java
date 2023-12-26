@@ -7,7 +7,6 @@ import esideal.station.servico.*;
 
 public class Funcionario {
     private int cartaoFuncionario;
-    private EstadoTurno estadoTurno;
     private LocalDateTime horaEntrada;
     private LocalDateTime horaSaida;
     private TipoFuncionario tipoFuncionario;
@@ -15,9 +14,8 @@ public class Funcionario {
 
     /*CONSTRUTORES*/
 
-    public Funcionario(int cartaoFuncionario, EstadoTurno estadoTurno, LocalDateTime horaEntrada, LocalDateTime horaSaida, TipoFuncionario tipoFuncionario, TipoServico postosMecanico){
+    public Funcionario(int cartaoFuncionario, LocalDateTime horaEntrada, LocalDateTime horaSaida, TipoFuncionario tipoFuncionario, TipoServico postosMecanico){
         this.cartaoFuncionario = cartaoFuncionario;
-        this.estadoTurno = estadoTurno;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
         this.tipoFuncionario = tipoFuncionario;
@@ -26,7 +24,6 @@ public class Funcionario {
 
     public Funcionario(Funcionario f) {
         this.cartaoFuncionario = f.getCartaoFuncionario();
-        this.estadoTurno = f.getEstadoTurno();
         this.horaEntrada = f.getHoraEntrada();
         this.horaSaida = f.getHoraSaida();
         this.tipoFuncionario = f.getTipoFuncionario();
@@ -37,14 +34,6 @@ public class Funcionario {
 
     public int getCartaoFuncionario(){
         return this.cartaoFuncionario;
-    }
-
-    public EstadoTurno getEstadoTurno(){
-        return this.estadoTurno;
-    }
-
-    public void setEstadoTurno(EstadoTurno estadoTurno){
-        this.estadoTurno = estadoTurno;
     }
 
     public LocalDateTime getHoraEntrada(){
@@ -82,7 +71,6 @@ public class Funcionario {
         }
         Funcionario f = (Funcionario) o;
         return cartaoFuncionario == f.cartaoFuncionario &&
-        estadoTurno == f.estadoTurno &&
         Objects.equals(horaEntrada, f.horaEntrada) &&
         Objects.equals(horaSaida, f.horaSaida) &&
         tipoFuncionario == f.tipoFuncionario && 
@@ -92,7 +80,6 @@ public class Funcionario {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("ID de Funcionário: ").append(cartaoFuncionario).append("\n");
-        sb.append("Turno do Funcionário: ").append(estadoTurno).append("\n");
         sb.append("Hora de entrada do turno: ").append(horaEntrada).append("\n");
         sb.append("Hora de saída do turno: ").append(horaSaida).append("\n");
         sb.append("Tipo de Funcionário: ").append(tipoFuncionario).append("\n");

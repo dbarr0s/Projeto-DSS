@@ -64,6 +64,10 @@ public class EstacaoUI {
         System.out.println("Até Já!");
     }
 
+    /**
+     * Mostra o menu principal e suas opções.
+     */
+
     private void menuPrincipal() {
         Menu menu = new Menu(new String[]{
             "Login"
@@ -74,6 +78,10 @@ public class EstacaoUI {
 
         menu.run();
     }
+
+    /**
+     * Realiza o processo de login para os funcionários e redireciona para o sistema apropriado.
+     */
     
     private void login() {
         TurnosFacade t = new TurnosFacade();
@@ -126,6 +134,10 @@ public class EstacaoUI {
     }    
 
     //SISTEMA DO GERENTE//
+
+    /**
+     * Redireciona para o sistema de gerente após o login bem-sucedido.
+     */
     
     private void sistemaGerente() {
         Menu menu = new Menu(new String[]{
@@ -150,6 +162,10 @@ public class EstacaoUI {
 
     //GESTÃO DE SERVIÇOS//
 
+    /**
+     * Realiza a gestão de serviços oferecidos pela estação de serviço.
+     */
+
     private void gerirServicos() {
         Menu menu = new Menu("Gestão de Serviços", new String[]{
             "Criar e Agendar Serviços",
@@ -161,6 +177,10 @@ public class EstacaoUI {
 
         menu.run();
     }
+
+    /**
+     * Cria e agenda um novo serviço na estação de serviço.
+     */
 
     private void criarAgendarServico() {
         System.out.println("----------NOVO SERVIÇO----------");
@@ -228,11 +248,15 @@ public class EstacaoUI {
         }
         VeiculoFacade v = new VeiculoFacade();
 
-        if((f1.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == v.getVeiculos().get(matricula).getTipoMotor().toString()) && (t.toString() == v.getVeiculos().get(matricula).getTipoMotor().toString()) || t == TipoServico.UNIVERSAL){
+        if((f1.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == v.getVeiculos().get(matricula).getTipoMotor().toString()) && (t.toString() == v.getVeiculos().get(matricula).getTipoMotor().toString())){
             servicos.criarNovoServicoEAgendar(idServico, idFicha, IDFuncionario, matricula, custo, estado, horaInicioServico, horaFimServico, sms, t);
         }
         else System.out.println("Mensagem Enviada: Serviço não foi criado com sucesso!");
     }
+
+    /**
+     * Lista todos os serviços registados na estação de serviço.
+     */
 
     private void listarServicos() {
         try
@@ -252,6 +276,10 @@ public class EstacaoUI {
     }
 
     //GESTÃO DE CHECK-UPS//
+
+    /**
+     * Menu para gestão de check-ups na estação de serviço.
+     */
         
     private void gerirCheckUps() {
         Menu menu = new Menu("Gestão de Check-Ups", new String[]{
@@ -263,6 +291,10 @@ public class EstacaoUI {
 
         menu.run();
     }
+
+    /**
+     * Cria e agenda um novo check-up para um veículo na estação de serviço.
+     */
 
     private void criarCheckUps() {
         System.out.println("----------NOVO CHECK-UP----------");
@@ -300,6 +332,10 @@ public class EstacaoUI {
         else System.out.println("Check-up não foi criado com sucesso!");
     }
 
+    /**
+     * Lista todos os check-ups registados na estação de serviço.
+     */
+
     private void listarCheckUps() {
         try
         {
@@ -319,6 +355,10 @@ public class EstacaoUI {
     
     //GESTÃO DE CLIENTES//
 
+    /**
+     * Menu para gestão de clientes na estação de serviço.
+     */
+
     private void gerirClientes() {
         Menu menu = new Menu("Gestão de Clientes", new String[]{
             "Verificar se há informação sobre o cliente",
@@ -331,6 +371,10 @@ public class EstacaoUI {
 
         menu.run();
     }
+
+    /**
+     * Verifica se um cliente com um determinado nome está registado na estação de serviço.
+     */
     
     private void verificarClienteExiste() {
         System.out.println("Introduza o Nome do cliente: ");
@@ -344,6 +388,10 @@ public class EstacaoUI {
             System.out.println("Não existe cliente com o Nome " + n);
         }
     }
+
+    /**
+     * Verifica se um cliente possui veículos associados na estação de serviço.
+     */
     
     private void verificarClienteVeiculos() {
         System.out.println("Introduza o Nome do cliente: ");
@@ -371,6 +419,10 @@ public class EstacaoUI {
         }
     }
 
+    /**
+     * Lista todos os clientes registados na estação de serviço.
+     */
+
     private void listarClientes() {
         Map<String, Cliente> todosClientes = clientes.getClientes();
 
@@ -385,6 +437,10 @@ public class EstacaoUI {
     }
 
     //GESTÃO DE VEÍCULOS//
+
+    /**
+     * Menu para gestão de veículos na estação de serviço.
+     */
     
     private void gerirVeiculos() {
         Menu menu = new Menu("Gestão de Veículos", new String[]{
@@ -399,6 +455,10 @@ public class EstacaoUI {
         menu.run();
     }
 
+    /**
+     * Verifica se um veículo com uma determinada matrícula está registado na estação de serviço.
+     */
+
     private void verificarVeicExiste() {
         System.out.println("Introduza a matrícula do veículo: ");
         String matricula = sc.nextLine();
@@ -411,6 +471,10 @@ public class EstacaoUI {
             System.out.println("Não existe veículo com a matricula " + matricula);
         }
     }
+
+    /**
+     * Verifica o proprietário de um veículo com base na matrícula na estação de serviço.
+     */
 
     private void verificarDono() {
         System.out.println("Introduza a matrícula do veículo: ");
@@ -429,6 +493,10 @@ public class EstacaoUI {
         }
     }
 
+    /**
+     * Lista todos os veículos registados na estação de serviço.
+     */
+
     private void listarVeiculos() {
         Map<String, Veiculo> todosVeiculos = veiculos.getVeiculos();
 
@@ -444,6 +512,10 @@ public class EstacaoUI {
 
     //GESTÃO DE FICHAS DE VEÍCULOS//
 
+    /**
+     * Menu para gestão de fichas de veículos na estação de serviço.
+     */
+
     private void gerirFichas() {
         Menu menu = new Menu("Gestão de Fichas de Veículos", new String[]{
             "Ver Ficha de Veículo",
@@ -457,6 +529,10 @@ public class EstacaoUI {
         menu.run();
     }
 
+    /**
+     * Mostra a ficha de um veículo com base no número da ficha na estação de serviço.
+     */
+
     private void fichaVeic() {
         System.out.println("Introduza o número da ficha do veículo: ");
         int numFicha = sc.nextInt();
@@ -468,6 +544,10 @@ public class EstacaoUI {
             System.out.println("Não existe ficha com este número " + numFicha);
         }
     }
+
+    /**
+     * Lista os serviços associados a um veículo com base no número da ficha na estação de serviço.
+     */
 
     private void listarServicos1() {
         System.out.println("Introduza o número da ficha do veículo: ");
@@ -482,6 +562,10 @@ public class EstacaoUI {
             }
         }
     }
+
+    /**
+     * Lista os check-ups associados a um veículo com base no número da ficha na estação de serviço.
+     */
 
     private void listarCheckUps1() {
         System.out.println("Introduza o número da ficha do veículo: ");
@@ -499,6 +583,10 @@ public class EstacaoUI {
 
     //GESTÃO DE FUNCIONÁRIOS//
 
+    /**
+     * Menu para gestão de funcionários na estação de serviço.
+     */
+
     private void gerirFuncionarios() {
         Menu menu = new Menu("Gestão de Funcionários", new String[]{
             "Listar Serviços do dia do Funcionário",
@@ -509,12 +597,16 @@ public class EstacaoUI {
         menu.setHandler(1, ()->servDiaFuncionarios());
         menu.setHandler(2, ()->checkUpsDiaFuncionario());
         menu.setHandler(3, ()->listaFuncionarios());
-        menu.setHandler(4, ()->mostrarRegistrosDeTodosFuncionarios());
+        menu.setHandler(4, ()->mostrarRegistosDeTodosFuncionarios());
 
         menu.run();
     }
+
+    /**
+     * Mostra os registos de turnos de um funcionário com base no número do cartão.
+     */
     
-    private void mostrarRegistrosDeTodosFuncionarios() {
+    private void mostrarRegistosDeTodosFuncionarios() {
         System.out.println("Introduza o número de cartão de funcionário: ");
         int numFunc = sc.nextInt();
 
@@ -539,6 +631,10 @@ public class EstacaoUI {
         }
     }
 
+    /**
+     * Lista os serviços do dia de um funcionário com base no número do cartão.
+     */
+
     private void servDiaFuncionarios() {
         System.out.println("Introduza o número do cartão do funcionário: ");
         int numFunc = sc.nextInt();
@@ -549,6 +645,10 @@ public class EstacaoUI {
         }
     }
 
+    /**
+     * Lista os check-ups do dia de um funcionário com base no número do cartão.
+     */
+
     private void checkUpsDiaFuncionario() {
         System.out.println("Introduza o número do cartão do funcionário: ");
         int numFunc = sc.nextInt();
@@ -558,6 +658,10 @@ public class EstacaoUI {
                 System.out.println(c.getNumCheckUp());
         }
     }
+
+    /**
+     * Lista todos os funcionários registados na estação de serviço.
+     */
 
     private void listaFuncionarios(){
         if (funcionarios.getFuncionarios().values().isEmpty()) {
@@ -571,6 +675,10 @@ public class EstacaoUI {
     }
 
     //SISTEMA DO MECÂNICO//
+
+    /**
+     * Menu para o sistema do mecânico na estação de serviço.
+     */
 
     private void sistemaMecanico() {
         Menu menu = new Menu(new String[]{
@@ -591,6 +699,10 @@ public class EstacaoUI {
 
         menu.run();
     }
+
+    /**
+     * Inicia um serviço na estação de serviço com base no número do serviço.
+     */
 
     private void iniciarServico() {
         System.out.println("Introduza o número do serviço a iniciar: ");
@@ -621,6 +733,10 @@ public class EstacaoUI {
         }
         else System.out.println("Serviço não encontrado para iniciar.");
     }
+
+    /**
+     * Finaliza um serviço na estação de serviço e notifica o cliente correspondente.
+     */
     
     private void finalizarEnotificar() {
         VeiculoFacade v = new VeiculoFacade();
@@ -638,6 +754,10 @@ public class EstacaoUI {
         }
         else System.out.println("Serviço não encontrado para finalizar.");
     }
+
+    /**
+     * Inicia um check-up na estação de serviço com base no número do check-up.
+     */
 
     private void iniciarCheckUps() {
         System.out.println("Introduza o número do Check-Up a iniciar: ");
@@ -662,7 +782,14 @@ public class EstacaoUI {
         } else System.out.println("Check-Up não encontrado para iniciar.");
     }
 
+    /**
+     * Finaliza um check-up na estação de serviço e notifica o cliente correspondente.
+     */
+
     private void finalizarCheckUps() {
+        CheckUpFacade c1 = new CheckUpFacade();
+        VeiculoFacade v = new VeiculoFacade();
+        ClienteFacade cliente = new ClienteFacade();
         System.out.println("Introduza o número do Check-Up a finalizar: ");
         int numCheckUp = sc.nextInt();
         System.out.println("Introduza o seu cartão a iniciar: ");
@@ -683,6 +810,7 @@ public class EstacaoUI {
                 System.out.println("Serviços agendados com sucesso!");
             }
             System.out.println("Check-Up " + numCheckUp + " concluído com sucesso.");
+            c1.notificarClienteFimServico(numCheckUp, v, cliente);
         }
         else System.out.println("Check-Up não foi encontrado!");
     } 

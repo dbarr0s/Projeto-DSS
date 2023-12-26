@@ -12,7 +12,13 @@ import esideal.station.veiculo.TipoVeiculo;
 import esideal.station.veiculo.Veiculo;
 
 public class VeiculoDAO implements Map<String, Veiculo>{
-        private static VeiculoDAO singleton = null;
+    private static VeiculoDAO singleton = null;
+
+    /**
+     * Cria a tabela 'veiculos' no banco de dados, se não existir, para armazenar informações dos veículos.
+     * A tabela possui colunas para Matricula, Dono, NomeVeic, TVeiculo e TMotor.
+     * @throws NullPointerException Se ocorrer um erro durante a criação da tabela no banco de dados.
+     */
 
     public VeiculoDAO(){
         try{
@@ -34,12 +40,22 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         }
     }
 
+    /**
+     * Retorna a instância singleton de VeiculoDAO, se existir; caso contrário, cria uma nova instância.
+     * @return A instância singleton de VeiculoDAO.
+     */
+
     public static VeiculoDAO getInstance(){
         if(VeiculoDAO.singleton == null){
             VeiculoDAO.singleton = new VeiculoDAO();
         }
         return VeiculoDAO.singleton;
     }
+
+    /**
+     * Retorna o número de registos (veículos) presentes na tabela 'veiculos'.
+     * @return O número de registos (veículos) presentes na tabela 'veiculos'.
+     */
 
     @Override
     public int size() {
@@ -58,10 +74,21 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         return i;
     }
 
+    /**
+     * Verifica se a tabela 'veiculos' está vazia.
+     * @return true se a tabela 'veiculos' estiver vazia, false caso contrário.
+     */
+
     @Override
     public boolean isEmpty() {
         return this.size() == 0;
     }
+
+    /**
+     * Verifica se a chave (Matricula) fornecida está presente na tabela 'veiculos'.
+     * @param key A chave (Matricula) a ser verificada na tabela.
+     * @return 'true' se a chave estiver presente na tabela; caso contrário, 'false'.
+     */
 
     @Override
     public boolean containsKey(Object key) {
@@ -79,11 +106,23 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         return r;
     }
 
+    /**
+     * Verifica se o valor (Veiculo) fornecido está presente na tabela 'veiculos'.
+     * @param value O valor (Veiculo) a ser verificado na tabela.
+     * @return 'true' se o valor estiver presente na tabela; caso contrário, 'false'.
+     */
+
     @Override
     public boolean containsValue(Object value) {
         Veiculo v = (Veiculo) value;
         return this.containsKey(v.getMatricula());
     }
+
+    /**
+     * Obtém o veículo associado à chave (Matricula) fornecida na tabela 'veiculos'.
+     * @param key A chave (Matricula) do veículo a ser recuperado.
+     * @return O veículo associado à chave fornecida, ou 'null' se não for encontrado.
+     */
 
     @Override
     public Veiculo get(Object key) {
@@ -112,6 +151,13 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         return v;
     }
 
+    /**
+     * Adiciona um veículo à tabela 'veiculos' com a chave e valor fornecidos.
+     * @param key A chave (Matricula) do veículo a ser adicionado.
+     * @param value O veículo a ser adicionado à tabela.
+     * @return O veículo adicionado à tabela.
+     */
+
     @Override
     public Veiculo put(String key, Veiculo value) {
         String sql = "INSERT INTO veiculos (Matricula, Dono, Nome, TVeiculo, TMotor) " +
@@ -135,6 +181,12 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         return value;
     }
 
+    /**
+     * Remove o veículo associado à chave (Matricula) fornecida da tabela 'veiculos'.
+     * @param key A chave (Matricula) do veículo a ser removido.
+     * @return O veículo removido, ou 'null' se não for encontrado na tabela.
+     */
+
     @Override
     public Veiculo remove(Object key) {
         Veiculo v = null;
@@ -153,6 +205,11 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         return v;
     }
 
+    /**
+     * Adiciona todos os veículos do mapa fornecido à tabela 'veiculos'.
+     * @param m O mapa contendo veículos a serem adicionados à tabela.
+     */
+
     @Override
     public void putAll(Map<? extends String, ? extends Veiculo> m) { 
     //Este método recebe (Map) como argumento, onde as chaves são do tipo String e os valores são do tipo Veiculo
@@ -160,6 +217,11 @@ public class VeiculoDAO implements Map<String, Veiculo>{
             this.put(v.getMatricula(), v.clone());
         }
     }
+
+    /**
+     * Limpa todos os registos da tabela 'veiculos'.
+     * @throws NullPointerException Se ocorrer um erro ao limpar a tabela.
+     */
 
     @Override
     public void clear() {
@@ -172,6 +234,12 @@ public class VeiculoDAO implements Map<String, Veiculo>{
             throw new NullPointerException(e.getMessage());
         }
     }
+
+    /**
+     * Retorna um conjunto contendo todas as chaves (Matricula) presentes na tabela 'veiculos'.
+     * @return Um conjunto de chaves (Matricula) presentes na tabela 'veiculos'.
+     * @throws NullPointerException Se ocorrer um erro ao recuperar as chaves.
+     */
 
     @Override
     public Set<String> keySet() {
@@ -191,6 +259,12 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         return res;
     }
 
+    /**
+     * Retorna uma coleção contendo todos os valores (Veiculo) presentes na tabela 'veiculos'.
+     * @return Uma coleção de valores (Veiculo) presentes na tabela 'veiculos'.
+     * @throws RuntimeException Se ocorrer um erro ao recuperar os valores.
+     */
+
     @Override
     public Collection<Veiculo> values() {
         Collection<Veiculo> res = new HashSet<>();
@@ -207,7 +281,12 @@ public class VeiculoDAO implements Map<String, Veiculo>{
         }
         return res;
     }
-    
+ 
+    /**
+     * Retorna um conjunto contendo todas as entradas (Matricula, Veiculo) presentes na tabela 'veiculos'.
+     * @return Um conjunto de entradas (Matricula, Veiculo) presentes na tabela 'veiculos'.
+     * @throws NullPointerException Se ocorrer um erro ao recuperar as entradas.
+     */
 
     @Override
     public Set<Entry<String, Veiculo>> entrySet() {

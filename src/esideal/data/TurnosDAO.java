@@ -17,6 +17,12 @@ import java.time.LocalDateTime;
 public class TurnosDAO implements Map<Integer, Turnos>{
     private static TurnosDAO singleton = null;
 
+    /**
+     * Construtor da classe TurnosDAO, cria a tabela 'turnos' se ela não existir no banco de dados.
+     * Caso contrário, inicializa uma conexão com o banco de dados e executa uma consulta SQL para criar a tabela.
+     * @throws NullPointerException Se ocorrer um erro ao criar a tabela 'turnos' no banco de dados.
+     */
+
     public TurnosDAO(){
         try{
             Connection connection = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
@@ -36,12 +42,23 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         }
     }
 
+    /**
+     * Retorna uma instância única (singleton) da classe TurnosDAO.
+     * @return A instância única da classe TurnosDAO.
+     */
+
     public static TurnosDAO getInstance(){
         if(TurnosDAO.singleton == null){
             TurnosDAO.singleton = new TurnosDAO();
         }
         return TurnosDAO.singleton;
     }
+
+    /**
+     * Retorna o número de registos na tabela 'turnos'.
+     * @return O número de registos na tabela 'turnos'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public int size() {
@@ -60,10 +77,22 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         return i;
     }
 
+    /**
+     * Verifica se a tabela 'turnos' está vazia.
+     * @return true se a tabela 'turnos' estiver vazia, false caso contrário.
+     */
+
     @Override
     public boolean isEmpty() {
         return this.size() == 0;
     }
+
+    /**
+     * Verifica se a chave (NumTurno) especificada está presente na tabela 'turnos'.
+     * @param key A chave (NumTurno) a ser verificada.
+     * @return true se a chave estiver presente na tabela 'turnos', false caso contrário.
+     * @throws NullPointerException Se ocorrer um erro ao executar a consulta SQL.
+     */
 
     @Override
     public boolean containsKey(Object key) {
@@ -81,11 +110,24 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         return r;
     }
 
+    /**
+     * Verifica se o valor especificado está presente na tabela 'turnos'.
+     * @param value O valor (Turnos) a ser verificado.
+     * @return true se o valor estiver presente na tabela 'turnos', false caso contrário.
+     */
+
     @Override
     public boolean containsValue(Object value) {
         Turnos t = (Turnos) value;
         return this.containsKey(t.getCartaoFuncionario());
     }
+
+    /**
+     * Retorna o registo de turnos associado à chave (NumTurno) especificada.
+     * @param key A chave (NumTurno) do registo a ser recuperado.
+     * @return O registo de turnos associado à chave especificada ou null se não encontrado.
+     * @throws RuntimeException Se ocorrer um erro ao recuperar os dados de turnos.
+     */
 
     @Override
     public Turnos get(Object key) {    
@@ -116,6 +158,12 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         return t;
     }
 
+    /**
+     * Retorna uma lista de registos únicos de turnos, onde cada registo possui um NumTurno, Cartao, HEntrada e HSaida.
+     * @return Uma lista contendo registos únicos de turnos.
+     * @throws RuntimeException Se ocorrer um erro ao recuperar os dados de turnos.
+     */
+
     public List<Turnos> getAllUniqueTurnos() {
         List<Turnos> turnosList = new ArrayList<>();
         String query = "SELECT DISTINCT NumTurno, Cartao, HEntrada, HSaida FROM turnos";
@@ -142,7 +190,15 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         }
         
         return turnosList;
-    }    
+    }   
+    
+    /**
+     * Insere um novo registo de turno na tabela 'turnos'.
+     * @param key   A chave (NumTurno) do novo registo.
+     * @param value O valor (Turnos) a ser inserido na tabela.
+     * @return O valor (Turnos) inserido na tabela 'turnos'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a operação de inserção.
+     */
 
     @Override
     public Turnos put(Integer key, Turnos value) {
@@ -173,6 +229,13 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         return value;
     }
 
+    /**
+     * Atualiza o horário de saída de um funcionário na tabela 'turnos'.
+     * @param cartaoFuncionario O número do cartão do funcionário cujo horário de saída será atualizado.
+     * @param horaSaida         O novo horário de saída do funcionário.
+     * @throws RuntimeException Se ocorrer um erro ao atualizar o horário de saída no banco de dados.
+     */
+
     public void updateHoraSaida(int cartaoFuncionario, LocalDateTime horaSaida) {
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement("UPDATE turnos SET HSaida = ? WHERE Cartao = ?")) {
@@ -186,8 +249,14 @@ public class TurnosDAO implements Map<Integer, Turnos>{
             throw new RuntimeException("Erro ao atualizar a hora de saída no banco de dados: " + e.getMessage());
         }
     }
-        
 
+    /**
+     * Remove um registo de turno da tabela 'turnos' com base na chave (NumTurno) especificada.
+     * @param key A chave (NumTurno) do registro a ser removido.
+     * @return O registo de turno removido da tabela 'turnos'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a operação de remoção.
+     */
+        
     @Override
     public Turnos remove(Object key) {
 		Turnos t = this.get(key);
@@ -206,12 +275,22 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         return t;
     }
 
+    /**
+     * Adiciona todos os registos de turnos presentes no mapa 'm' à tabela 'turnos'.
+     * @param m O mapa contendo os registos de turnos a serem adicionados à tabela.
+     */
+
     @Override
     public void putAll(Map<? extends Integer, ? extends Turnos> m) {
 		for(Turnos t : m.values()) {
             this.put(t.getCartaoFuncionario(), t.clone());
         }
     }
+
+    /**
+     * Limpa todos os registos da tabela 'turnos'.
+     * @throws NullPointerException Se ocorrer um erro ao executar a operação de limpeza.
+     */
 
     @Override
     public void clear() {
@@ -224,6 +303,12 @@ public class TurnosDAO implements Map<Integer, Turnos>{
             throw new NullPointerException(e.getMessage());
         }
     }
+
+    /**
+     * Retorna um conjunto contendo todas as chaves (Cartao) presentes na tabela 'turnos'.
+     * @return Um conjunto de chaves (Cartao) presentes na tabela 'turnos'.
+     * @throws NullPointerException Se ocorrer um erro ao recuperar as chaves.
+     */
 
     @Override
     public Set<Integer> keySet() {
@@ -242,6 +327,12 @@ public class TurnosDAO implements Map<Integer, Turnos>{
         }
         return res;
     }
+
+    /**
+     * Retorna uma coleção contendo todos os valores (Turnos) presentes na tabela 'turnos'.
+     * @return Uma coleção de valores (Turnos) presentes na tabela 'turnos'.
+     * @throws RuntimeException Se ocorrer um erro ao recuperar os valores.
+     */
 
     @Override
     public Collection<Turnos> values() {

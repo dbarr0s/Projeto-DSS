@@ -8,7 +8,6 @@ import java.util.Set;
 import java.sql.*;
 import java.time.LocalDateTime;
 
-import esideal.station.funcionario.EstadoTurno;
 import esideal.station.funcionario.Funcionario;
 import esideal.station.funcionario.TipoFuncionario;
 import esideal.station.servico.TipoServico;
@@ -27,7 +26,6 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
             Statement stm = connection.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS funcionarios(" + 
                         "Cartao INT NOT NULL AUTO_INCREMENT, " +
-                        "EstadoTurno VARCHAR(50) NOT NULL, " +
                         "HEntrada DATETIME NOT NULL, " +
                         "HSaida DATETIME NOT NULL, " +
                         "TipoFunc VARCHAR(100) NOT NULL, " +
@@ -137,19 +135,17 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
              ResultSet rs = stm.executeQuery("SELECT * FROM funcionarios WHERE Cartao='"+key+"'")) {
             if(rs.next()){
                 int cartao = rs.getInt("Cartao");
-                String estadoTurno = rs.getString("EstadoTurno");
                 Timestamp entrada = rs.getTimestamp("HEntrada");
                 Timestamp saida = rs.getTimestamp("HSaida");
                 String tFunc = rs.getString("TipoFunc");
                 String posto = rs.getString("Posto");
 
-                EstadoTurno e = EstadoTurno.valueOf(estadoTurno);
                 LocalDateTime l = entrada.toLocalDateTime();
                 LocalDateTime l1 = saida.toLocalDateTime();
                 TipoFuncionario tf = TipoFuncionario.valueOf(tFunc);
                 TipoServico e1 = TipoServico.valueOf(posto);
                 
-                f = new Funcionario(cartao, e, l, l1, tf, e1);
+                f = new Funcionario(cartao, l, l1, tf, e1);
             }
         } catch (SQLException e) {
             // Database error!
@@ -169,15 +165,14 @@ public class FuncionarioDAO implements Map<Integer, Funcionario>{
 
     @Override
     public Funcionario put(Integer key, Funcionario value) {
-        String funcionarioQuery = "INSERT INTO funcionarios (Cartao,EstadoTurno,HEntrada,HSaida,TipoFunc,Posto) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String funcionarioQuery = "INSERT INTO funcionarios (Cartao,HEntrada,HSaida,TipoFunc,Posto) " +
+                "VALUES (?, ?, ?, ?, ?)";
     
         try (Connection conn = DriverManager.getConnection(ConfigDAO.URL, ConfigDAO.USERNAME, ConfigDAO.PASSWORD);
              PreparedStatement pstmtFuncionario = conn.prepareStatement(funcionarioQuery)) {
     
             pstmtFuncionario.setInt(1, value.getCartaoFuncionario());
-            pstmtFuncionario.setString(2, value.getEstadoTurno().toString());
-            pstmtFuncionario.setTimestamp(3, Timestamp.valueOf(value.getHoraEntrada()));
+            pstmtFuncionario.setTimestamp(2, Timestamp.valueOf(value.getHoraEntrada()));
             pstmtFuncionario.setTimestamp(4, Timestamp.valueOf(value.getHoraSaida()));
             pstmtFuncionario.setString(5, value.getTipoFuncionario().toString());
             pstmtFuncionario.setString(6, value.getPostosMecanico().toString());

@@ -20,6 +20,12 @@ public class FuncFacade implements IFuncionário{
         return this.funcionarios;
     }
 
+    /**
+     * Verifica se um funcionário com um determinado número de cartão está registado.
+     * @param cartaoFuncionario Número de cartão do funcionário a ser verificado.
+     * @return Verdadeiro se o funcionário existir; falso, caso contrário.
+     */
+
     public boolean funcionarioExiste(int cartaoFuncionario) {
         for (Funcionario funcionario : funcionarios.values()) {
             if (funcionario.getCartaoFuncionario() == cartaoFuncionario) {
@@ -28,6 +34,12 @@ public class FuncFacade implements IFuncionário{
         }
         return false;
     }  
+
+    /**
+     * Obtém todos os serviços associados a um funcionário com base no seu identificador.
+     * @param idFuncionario Identificador do funcionário para o qual os serviços estão sendo obtidos.
+     * @return Um mapa de serviços associados ao funcionário, onde a chave é o número do serviço e o valor é o serviço correspondente.
+     */
 
     public Map<Integer, Servico> obterServicosDoFuncionario(int idFuncionario) {
         Map<Integer, Servico> servicosDoFuncionario = new HashMap<>();
@@ -40,6 +52,12 @@ public class FuncFacade implements IFuncionário{
         }
         return servicosDoFuncionario;
     }
+
+    /**
+     * Obtém todos os check-ups associados a um funcionário com base no seu identificador.
+     * @param idFuncionario Identificador do funcionário para o qual os check-ups estão sendo obtidos.
+     * @return Um mapa de check-ups associados ao funcionário, onde a chave é o número do check-up e o valor é o check-up correspondente.
+     */
     
     public Map<Integer, CheckUp> obterCheckUpsDoFuncionario(int idFuncionario) {
         Map<Integer, CheckUp> checkUpsDoFuncionario = new HashMap<>();
@@ -53,6 +71,4 @@ public class FuncFacade implements IFuncionário{
     
         return checkUpsDoFuncionario;
     }
-    
-
 }
