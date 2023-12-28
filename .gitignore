@@ -1,2 +1,5 @@
 # java output files
 *.class
+
+# vpp backup files
+*.vpp.bak_000f
