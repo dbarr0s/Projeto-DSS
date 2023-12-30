@@ -611,20 +611,20 @@ public class EstacaoUI {
         int numFunc = sc.nextInt();
 
         TurnosDAO turnosDAO = TurnosDAO.getInstance();
-        List<Turnos> registros = turnosDAO.getAllUniqueTurnos();
+        List<Turnos> registos = turnosDAO.getAllUniqueTurnos();
 
-        List<Turnos> registrosFuncionario = new ArrayList<>();
+        List<Turnos> registosFuncionario = new ArrayList<>();
 
-        for (Turnos registro : registros) {
-            if (registro.getCartaoFuncionario() == numFunc) {
-                registrosFuncionario.add(registro);
+        for (Turnos registo : registos) {
+            if (registo.getCartaoFuncionario() == numFunc) {
+                registosFuncionario.add(registo);
             }
         }
 
-        if (!registrosFuncionario.isEmpty()) {
+        if (!registosFuncionario.isEmpty()) {
             System.out.println("Registos de turnos do funcionário " + numFunc + ":");
-            for (Turnos registro : registrosFuncionario) {
-                System.out.println(registro);
+            for (Turnos registo : registosFuncionario) {
+                System.out.println(registo);
             }
         } else {
             System.out.println("Nenhum registo de turno encontrado para o funcionário " + numFunc + ".");
