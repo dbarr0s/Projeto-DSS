@@ -184,7 +184,6 @@ public class EstacaoUI {
 
     private void criarAgendarServico() {
         System.out.println("----------NOVO SERVIÇO----------");
-
         int idServico = 0;
         
         System.out.println("Introduzir ID do funcionário responsável: ");
@@ -250,8 +249,13 @@ public class EstacaoUI {
 
         if((f1.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == v.getVeiculos().get(matricula).getTipoMotor().toString()) && (t.toString() == v.getVeiculos().get(matricula).getTipoMotor().toString())){
             servicos.criarNovoServicoEAgendar(idServico, idFicha, IDFuncionario, matricula, custo, estado, horaInicioServico, horaFimServico, sms, t);
+        }        
+        else 
+        {
+            System.out.println("Mensagem Enviada: Serviço não foi criado com sucesso!");
+            System.out.println("Tente Novamente!");
+            criarAgendarServico();
         }
-        else System.out.println("Mensagem Enviada: Serviço não foi criado com sucesso!");
     }
 
     /**
@@ -329,7 +333,11 @@ public class EstacaoUI {
         if(f1.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == v.getVeiculos().get(matricula).getTipoMotor().toString()){
             checkups.criarNovoCheckUpEAgendar(idCheckUp, idFicha, IDFuncionario, matricula, horaInicioServico, datafim, Estado.AGENDADO);
         }
-        else System.out.println("Check-up não foi criado com sucesso!");
+        else{
+            System.out.println("Check-up não foi criado com sucesso!");
+            System.out.println("Tente Novamente!");
+            criarCheckUps();
+        }
     }
 
     /**
@@ -807,10 +815,10 @@ public class EstacaoUI {
                 for (int i = 0; i < num; i++){
                     criarAgendarServico();
                 }
-                System.out.println("Serviços agendados com sucesso!");
+                System.out.println("Serviço(s) agendado(s) com sucesso!");
+                System.out.println("Check-Up " + numCheckUp + " concluído com sucesso.");
+                c1.notificarClienteFimServico(numCheckUp, v, cliente);
             }
-            System.out.println("Check-Up " + numCheckUp + " concluído com sucesso.");
-            c1.notificarClienteFimServico(numCheckUp, v, cliente);
         }
         else System.out.println("Check-Up não foi encontrado!");
     } 

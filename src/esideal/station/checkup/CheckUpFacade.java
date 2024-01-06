@@ -69,6 +69,11 @@ public class CheckUpFacade implements ICheckUp{
             return; // Cancela o agendamento do check-up
         }
 
+        if (dataCheckUp.isBefore(LocalDateTime.now())) {
+            System.out.println("Conflito de horário com um serviço agendado ou em andamento ou horário.");
+            return; // Cancela o agendamento do check-up
+        }
+
         checkups.put(numCheckUp, novoCheckUp.clone());
         f1.getFichas().get(numFicha).getCheckups().put(numCheckUp, novoCheckUp.clone());
 
@@ -98,7 +103,7 @@ public class CheckUpFacade implements ICheckUp{
             String matricula = c.getMatricula();
             Cliente cliente = v.encontrarClientePorVeiculo(matricula);
             if (cliente != null) {
-                String mensagem = "O serviço " + numCheckUp + " foi concluído com sucesso.";
+                String mensagem = "O check-up " + numCheckUp + " foi concluído com sucesso.";
                 enviarMensagemCliente(cliente, mensagem);
             } else {
                 System.out.println("Cliente não encontrado para o veículo associado ao serviço " + numCheckUp);

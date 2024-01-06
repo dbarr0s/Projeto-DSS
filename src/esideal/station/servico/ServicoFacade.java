@@ -75,6 +75,11 @@ public class ServicoFacade implements IServico{
             return; // Cancela o agendamento do check-up
         }
 
+        if (horaInicio.isBefore(LocalDateTime.now())) {
+            System.out.println("Conflito de horário com um serviço agendado ou em andamento ou horário.");
+            return; // Cancela o agendamento do check-up
+        }
+
         servicos.put(novoServico.getNumServiço(), novoServico.clone());
         f1.getFichas().get(numFicha).getServicos().put(numServiço, novoServico.clone());
     }
