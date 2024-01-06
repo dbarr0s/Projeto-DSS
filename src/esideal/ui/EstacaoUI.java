@@ -27,6 +27,7 @@ import esideal.station.servico.IServico;
 import esideal.station.servico.Servico;
 import esideal.station.servico.ServicoFacade;
 import esideal.station.servico.TipoServico;
+import esideal.station.turnos.ITurnos;
 import esideal.station.turnos.Turnos;
 import esideal.station.turnos.TurnosFacade;
 import esideal.station.veiculo.IVeiculos;
@@ -40,6 +41,7 @@ public class EstacaoUI {
     private final IVeiculos veiculos;
     private final IFichaVeiculo fichas;
     private final IFuncionário funcionarios;
+    private final ITurnos turnos;
     private final ICheckUp checkups;
 
     private final Scanner sc;
@@ -50,6 +52,7 @@ public class EstacaoUI {
         this.veiculos = new VeiculoFacade();
         this.fichas = new FichaFacade();
         this.funcionarios = new FuncFacade();
+        this.turnos = new TurnosFacade();
         this.checkups = new CheckUpFacade();
         
         sc = new Scanner(System.in);
@@ -84,45 +87,43 @@ public class EstacaoUI {
      */
     
     private void login() {
-        TurnosFacade t = new TurnosFacade();
-    
         while (true) {
             System.out.println("----------BEM VINDO----------");
             System.out.println("Introduza o seu ID de funcionário");
             int id = sc.nextInt();
             int numTurno = 0;
     
-            if (!funcionarios.funcionarioExiste(id)) {
+            if (!this.funcionarios.funcionarioExiste(id)) {
                 System.out.println("Funcionário não encontrado.");
                 continue; // Volta ao início do loop para nova tentativa de login
             }
     
-            if (funcionarios.getFuncionarios().get(id).getTipoFuncionario() == TipoFuncionario.MECANICO) {
+            if (this.funcionarios.getFuncionarios().get(id).getTipoFuncionario() == TipoFuncionario.MECANICO) {
                 System.out.println("Bem vindo, " + id + ".");
-                t.iniciarTurno(numTurno, id, LocalDateTime.now());
+                this.turnos.iniciarTurno(numTurno, id, LocalDateTime.now());
                 sistemaMecanico();
 
                 while (true) {
                     System.out.println("Deseja encerrar seu turno? (S/N)");
                     String resposta = sc.next();
                     if (resposta.equalsIgnoreCase("S")) {
-                        t.finalizarTurno(numTurno, id, LocalDateTime.now());
+                        this.turnos.finalizarTurno(numTurno, id, LocalDateTime.now());
                         break; // Encerra o loop e sai do sistema
                     } else {
                         sistemaMecanico();
                     }
                 }
                 break; // Sai do loop após o login bem-sucedido
-            } else if (funcionarios.getFuncionarios().get(id).getTipoFuncionario() == TipoFuncionario.GERENTE) {
+            } else if (this.funcionarios.getFuncionarios().get(id).getTipoFuncionario() == TipoFuncionario.GERENTE) {
                 System.out.println("Bem vindo, " + id + ".");
-                t.iniciarTurno(numTurno, id, LocalDateTime.now());
+                this.turnos.iniciarTurno(numTurno, id, LocalDateTime.now());
                 sistemaGerente();
     
                 while (true) {
                     System.out.println("Deseja encerrar seu turno? (S/N)");
                     String resposta = sc.next();
                     if (resposta.equalsIgnoreCase("S")) {
-                        t.finalizarTurno(numTurno, id, LocalDateTime.now());
+                        this.turnos.finalizarTurno(numTurno, id, LocalDateTime.now());
                         break; // Encerra o loop e sai do sistema
                     } else {
                         sistemaGerente();
@@ -188,21 +189,19 @@ public class EstacaoUI {
         
         System.out.println("Introduzir ID do funcionário responsável: ");
         int IDFuncionario = sc.nextInt();
-        FuncFacade f1 = new FuncFacade();
-        if (!f1.funcionarioExiste(IDFuncionario)) {
+        if (!this.funcionarios.funcionarioExiste(IDFuncionario)) {
             System.out.println("Não introduziu o número da ficha do veículo");
             sistemaGerente();
         }
         
         System.out.println("Introduzir ID da ficha de veiculo: ");
         int idFicha = sc.nextInt();
-        FichaFacade f = new FichaFacade();
-        if (!f.existeFicha(idFicha)) {
+        if (!this.fichas.existeFicha(idFicha)) {
             System.out.println("Não introduziu o número da ficha do veículo");
             sistemaGerente();
         }
 
-        FichaVeiculo ficha = f.getFichas().get(idFicha);
+        FichaVeiculo ficha = this.fichas.getFichas().get(idFicha);
         String matricula = ficha.getMatricula();
         
         System.out.println("Introduzir custo do serviço: ");
@@ -245,10 +244,9 @@ public class EstacaoUI {
                 System.out.println("Opção inválida. O serviço não foi criado.");
                 return; // Sai do método sem criar o serviço
         }
-        VeiculoFacade v = new VeiculoFacade();
 
-        if((f1.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == v.getVeiculos().get(matricula).getTipoMotor().toString()) && (t.toString() == v.getVeiculos().get(matricula).getTipoMotor().toString())){
-            servicos.criarNovoServicoEAgendar(idServico, idFicha, IDFuncionario, matricula, custo, estado, horaInicioServico, horaFimServico, sms, t);
+        if((this.funcionarios.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == this.veiculos.getVeiculos().get(matricula).getTipoMotor().toString()) && (t.toString() == this.veiculos.getVeiculos().get(matricula).getTipoMotor().toString())){
+            this.servicos.criarNovoServicoEAgendar(idServico, idFicha, IDFuncionario, matricula, custo, estado, horaInicioServico, horaFimServico, sms, t);
         }        
         else 
         {
@@ -265,11 +263,11 @@ public class EstacaoUI {
     private void listarServicos() {
         try
         {
-            if (servicos.getServicos().isEmpty()) {
+            if (this.servicos.getServicos().isEmpty()) {
                 System.out.println("Não há servicos registados.");
             } else {
                 System.out.println("Lista de todos os servicos:");
-                for (Servico s : servicos.getServicos().values()) {
+                for (Servico s : this.servicos.getServicos().values()) {
                     System.out.println(s.clone());
                 }
             }
@@ -306,20 +304,18 @@ public class EstacaoUI {
 
         System.out.println("Introduzir ID do funcionário responsável: ");
         int IDFuncionario = sc.nextInt();
-        FuncFacade f1 = new FuncFacade();
-        if (!f1.funcionarioExiste(IDFuncionario)) {
+        if (!this.funcionarios.funcionarioExiste(IDFuncionario)) {
             System.out.println("Não introduziu o número do funcionário correto");
             sistemaGerente();
         }
         
         System.out.println("Introduzir ID da ficha de veiculo: ");
         int idFicha = sc.nextInt();
-        FichaFacade f = new FichaFacade();
-        if (!f.existeFicha(idFicha)) {
+        if (!this.fichas.existeFicha(idFicha)) {
             System.out.println("Não introduziu o número da ficha do veículo correto");
             sistemaGerente();
         }
-        FichaVeiculo ficha = f.getFichas().get(idFicha);
+        FichaVeiculo ficha = this.fichas.getFichas().get(idFicha);
         String matricula = ficha.getMatricula();
         
         System.out.println("Introduzir hora de inicio (Formato: yyyy-MM-ddTHH:mm:ss): ");
@@ -329,9 +325,8 @@ public class EstacaoUI {
         LocalDateTime horaInicioServico = LocalDateTime.parse(horaInicio);
         LocalDateTime datafim = horaInicioServico.plusHours(1); 
         
-        VeiculoFacade v = new VeiculoFacade();
-        if(f1.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == v.getVeiculos().get(matricula).getTipoMotor().toString()){
-            checkups.criarNovoCheckUpEAgendar(idCheckUp, idFicha, IDFuncionario, matricula, horaInicioServico, datafim, Estado.AGENDADO);
+        if(this.funcionarios.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == this.veiculos.getVeiculos().get(matricula).getTipoMotor().toString()){
+            this.checkups.criarNovoCheckUpEAgendar(idCheckUp, idFicha, IDFuncionario, matricula, horaInicioServico, datafim, Estado.AGENDADO);
         }
         else{
             System.out.println("Check-up não foi criado com sucesso!");
@@ -347,11 +342,11 @@ public class EstacaoUI {
     private void listarCheckUps() {
         try
         {
-            if (checkups.getCheckUps().values().isEmpty()) {
+            if (this.checkups.getCheckUps().values().isEmpty()) {
                 System.out.println("Não há check-ups registados.");
             } else {
                 System.out.println("Lista de todos os check-ups:");
-                for (CheckUp c : checkups.getCheckUps().values()) {
+                for (CheckUp c : this.checkups.getCheckUps().values()) {
                     System.out.println(c.clone());
                 }
             }
@@ -388,9 +383,9 @@ public class EstacaoUI {
         System.out.println("Introduza o Nome do cliente: ");
         String n = sc.nextLine();
 
-        if (clientes.clienteValido(n)) {
+        if (this.clientes.clienteValido(n)) {
             System.out.println("O cliente com Nome " + n + " é válido.");
-            Cliente c = clientes.getClientes().get(n);
+            Cliente c = this.clientes.getClientes().get(n);
             System.out.println("Cliente: " + c);
         } else {
             System.out.println("Não existe cliente com o Nome " + n);
@@ -405,9 +400,9 @@ public class EstacaoUI {
         System.out.println("Introduza o Nome do cliente: ");
         String n = sc.nextLine();
 
-        Cliente cliente = clientes.getClientes().get(n);
+        Cliente cliente = this.clientes.getClientes().get(n);
         if (cliente != null) {
-            if (clientes.clienteTemVeiculos(cliente)) {
+            if (this.clientes.clienteTemVeiculos(cliente)) {
                 System.out.println("O cliente com Nome " + n + " possui veículos associados.");
                 Map<String, Veiculo> todosVeiculos = cliente.getVeiculos();
 
@@ -432,13 +427,11 @@ public class EstacaoUI {
      */
 
     private void listarClientes() {
-        Map<String, Cliente> todosClientes = clientes.getClientes();
-
-        if (todosClientes.isEmpty()) {
+        if (clientes.getClientes().isEmpty()) {
             System.out.println("Não há clientes registados.");
         } else {
             System.out.println("Lista de todos os clientes:");
-            for (Cliente cliente : todosClientes.values()) {
+            for (Cliente cliente : clientes.getClientes().values()) {
                 System.out.println(cliente);
             }
         }
@@ -471,9 +464,9 @@ public class EstacaoUI {
         System.out.println("Introduza a matrícula do veículo: ");
         String matricula = sc.nextLine();
 
-        if (veiculos.veicExiste(matricula)) {
+        if (this.veiculos.veicExiste(matricula)) {
             System.out.println("O veículo com matrícula " + matricula + " é válido.");
-            Veiculo v = veiculos.getVeiculos().get(matricula);
+            Veiculo v = this.veiculos.getVeiculos().get(matricula);
             System.out.println("Veiculo: " + v);
         } else {
             System.out.println("Não existe veículo com a matricula " + matricula);
@@ -488,13 +481,13 @@ public class EstacaoUI {
         System.out.println("Introduza a matrícula do veículo: ");
         String matricula = sc.nextLine();
 
-        Veiculo v = veiculos.getVeiculos().get(matricula);
+        Veiculo v = this.veiculos.getVeiculos().get(matricula);
         if (v != null) {
-            if (veiculos.veicExiste(matricula)) {
-                Cliente c = veiculos.encontrarClientePorVeiculo(matricula);
+            if (this.veiculos.veicExiste(matricula)) {
+                Cliente c = this.veiculos.encontrarClientePorVeiculo(matricula);
                 System.out.println("O veículo com matrícula " + matricula + " tem como dono, o cliente com o Nome: " +c.getNome()+ ".");
                 String id = c.getNome();
-                clientes.getClientes().get(id);
+                this.clientes.getClientes().get(id);
             }
         } else {
             System.out.println("Não existe veículo com matrícula " + matricula + ".");
@@ -506,13 +499,11 @@ public class EstacaoUI {
      */
 
     private void listarVeiculos() {
-        Map<String, Veiculo> todosVeiculos = veiculos.getVeiculos();
-
-        if (todosVeiculos.isEmpty()) {
+        if (this.veiculos.getVeiculos().isEmpty()) {
             System.out.println("Não há veículos registados.");
         } else {
             System.out.println("Lista de todos os veículos:");
-            for (Veiculo v : todosVeiculos.values()) {
+            for (Veiculo v : this.veiculos.getVeiculos().values()) {
                 System.out.println(v);
             }
         }
@@ -545,8 +536,8 @@ public class EstacaoUI {
         System.out.println("Introduza o número da ficha do veículo: ");
         int numFicha = sc.nextInt();
 
-        if (fichas.existeFicha(numFicha)) {
-            FichaVeiculo f = fichas.getFichas().get(numFicha);
+        if (this.fichas.existeFicha(numFicha)) {
+            FichaVeiculo f = this.fichas.getFichas().get(numFicha);
             System.out.println("Ficha de Veículo: " + f);
         } else {
             System.out.println("Não existe ficha com este número " + numFicha);
@@ -561,11 +552,11 @@ public class EstacaoUI {
         System.out.println("Introduza o número da ficha do veículo: ");
         int numFicha = sc.nextInt();
 
-        if (servicos.getServicos().isEmpty()) {
+        if (this.servicos.getServicos().isEmpty()) {
             System.out.println("Não há servicos registados.");
         } else {
             System.out.println("Lista de todos os servicos:");
-            for (Servico s : servicos.getServicos().values()){
+            for (Servico s : this.servicos.getServicos().values()){
                 if(s.getNumFicha() == numFicha) System.out.println(s.clone());
             }
         }
@@ -579,11 +570,11 @@ public class EstacaoUI {
         System.out.println("Introduza o número da ficha do veículo: ");
         int numFicha = sc.nextInt();
 
-        if (checkups.getCheckUps().values().isEmpty()) {
+        if (this.checkups.getCheckUps().values().isEmpty()) {
             System.out.println("Não há check-ups registados.");
         } else {
             System.out.println("Lista de todos os check-ups:");
-            for (CheckUp c : checkups.getCheckUps().values()) {
+            for (CheckUp c : this.checkups.getCheckUps().values()) {
                 if(c.getNumFicha() == numFicha) System.out.println(c.clone());
             }
         }
@@ -647,7 +638,7 @@ public class EstacaoUI {
         System.out.println("Introduza o número do cartão do funcionário: ");
         int numFunc = sc.nextInt();
         System.out.println("Lista dos serviços do dia:");
-        for (Servico s : servicos.getServicos().values()) {
+        for (Servico s : this.servicos.getServicos().values()) {
             if(s.getFuncResponsavel() == numFunc && (s.getEstado() == Estado.AGENDADO || s.getEstado() == Estado.EM_ANDAMENTO)) 
                 System.out.println(s.getNumServiço());
         }
@@ -661,7 +652,7 @@ public class EstacaoUI {
         System.out.println("Introduza o número do cartão do funcionário: ");
         int numFunc = sc.nextInt();
         System.out.println("Lista dos check-ups do dia:");
-        for (CheckUp c : checkups.getCheckUps().values()) {
+        for (CheckUp c : this.checkups.getCheckUps().values()) {
             if(c.getFuncResponsavel() == numFunc && (c.getEstado() == Estado.AGENDADO || c.getEstado() == Estado.EM_ANDAMENTO))
                 System.out.println(c.getNumCheckUp());
         }
@@ -672,11 +663,11 @@ public class EstacaoUI {
      */
 
     private void listaFuncionarios(){
-        if (funcionarios.getFuncionarios().values().isEmpty()) {
+        if (this.funcionarios.getFuncionarios().values().isEmpty()) {
             System.out.println("Não há funcionários registados.");
         } else {
             System.out.println("Lista de todos os funcionários:");
-            for (Funcionario f : funcionarios.getFuncionarios().values()) {
+            for (Funcionario f : this.funcionarios.getFuncionarios().values()) {
                 System.out.println(f.clone());
             }
         }
@@ -715,19 +706,18 @@ public class EstacaoUI {
     private void iniciarServico() {
         System.out.println("Introduza o número do serviço a iniciar: ");
         int numServico = sc.nextInt();
-        if(servicos.getServicos().get(numServico) != null)
+        if(this.servicos.getServicos().get(numServico) != null)
         {
             System.out.println("Introduza o seu cartão a iniciar: ");
             int numFunc = sc.nextInt();
-            ServicoFacade s = new ServicoFacade();
 
-            Servico servico = s.getServicos().get(numServico);
+            Servico servico = this.servicos.getServicos().get(numServico);
 
             if (servico.getEstado() != Estado.CONCLUÍDO){
                 if (servico != null && servico.getFuncResponsavel() == numFunc) {
                     servico.setEstado(Estado.EM_ANDAMENTO);
 
-                    ServicoDAO servicoDAO = new ServicoDAO(); 
+                    ServicoDAO servicoDAO = ServicoDAO.getInstance(); 
                     servicoDAO.atualizarEstadoServico(servico); 
 
                     servico.setSms("Serviço " + numServico + " iniciado com sucesso.");
@@ -749,16 +739,15 @@ public class EstacaoUI {
     private void finalizarEnotificar() {
         VeiculoFacade v = new VeiculoFacade();
         ClienteFacade c = new ClienteFacade();
-        ServicoFacade s = new ServicoFacade();
         System.out.println("Introduza o número do serviço a finalizar: ");
         int numServico = sc.nextInt();
         
-        if(servicos.getServicos().get(numServico) != null){
+        if(this.servicos.getServicos().get(numServico) != null){
             System.out.println("Introduza o seu cartão a iniciar: ");
             int numFunc = sc.nextInt();
         
-            s.finalizarServico(numServico, numFunc);
-            s.notificarClienteFimServico(numServico, v, c);
+            this.servicos.finalizarServico(numServico, numFunc);
+            this.servicos.notificarClienteFimServico(numServico, v, c);
         }
         else System.out.println("Serviço não encontrado para finalizar.");
     }
@@ -773,14 +762,13 @@ public class EstacaoUI {
         if(checkups.getCheckUps().get(numCheckUp) != null){
             System.out.println("Introduza o seu cartão a iniciar: ");
             int numFunc = sc.nextInt();
-            CheckUpFacade c = new CheckUpFacade();
         
-            CheckUp checkUp = c.getCheckUps().get(numCheckUp);
+            CheckUp checkUp = this.checkups.getCheckUps().get(numCheckUp);
             if (checkUp.getEstado() != Estado.CONCLUÍDO){
                 if (checkUp != null && checkUp.getFuncResponsavel() == numFunc) {
                     checkUp.setEstado(Estado.EM_ANDAMENTO);
 
-                    CheckUpDAO checkUpDAO = new CheckUpDAO(); 
+                    CheckUpDAO checkUpDAO = CheckUpDAO.getInstance(); 
                     checkUpDAO.atualizarEstadoCheckUp(checkUp); 
                     System.out.println("Check-Up " + numCheckUp + " iniciado com sucesso.");
                 } else {
@@ -795,7 +783,6 @@ public class EstacaoUI {
      */
 
     private void finalizarCheckUps() {
-        CheckUpFacade c1 = new CheckUpFacade();
         VeiculoFacade v = new VeiculoFacade();
         ClienteFacade cliente = new ClienteFacade();
         System.out.println("Introduza o número do Check-Up a finalizar: ");
@@ -806,7 +793,7 @@ public class EstacaoUI {
         if (c != null && c.getFuncResponsavel() == numFunc && c.getEstado() == Estado.EM_ANDAMENTO){
             c.setEstado(Estado.CONCLUÍDO);
 
-            CheckUpDAO checkUpDAO = new CheckUpDAO(); 
+            CheckUpDAO checkUpDAO = CheckUpDAO.getInstance(); 
             checkUpDAO.atualizarEstadoCheckUp(c); 
             System.out.println("Introduza o número de serviços a agendar: ");
             int num = sc.nextInt();
@@ -817,7 +804,7 @@ public class EstacaoUI {
                 }
                 System.out.println("Serviço(s) agendado(s) com sucesso!");
                 System.out.println("Check-Up " + numCheckUp + " concluído com sucesso.");
-                c1.notificarClienteFimServico(numCheckUp, v, cliente);
+                this.checkups.notificarClienteFimServico(numCheckUp, v, cliente);
             }
         }
         else System.out.println("Check-Up não foi encontrado!");

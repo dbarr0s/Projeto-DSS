@@ -113,7 +113,7 @@ public class ServicoFacade implements IServico{
      */
 
     public void enviarMensagemCliente(Cliente cliente, String mensagem) {
-        System.out.println("Mensagem enviada para " + cliente.getNome() + ": " + mensagem);
+        System.out.println("Mensagem enviada para " + cliente.getNome() + ", para o número " +cliente.getTelefone()+ ": " + mensagem);
     }
 
     /**

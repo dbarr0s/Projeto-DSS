@@ -86,8 +86,8 @@ public class CheckUpFacade implements ICheckUp{
      * @param mensagem Mensagem a ser enviada.
      */
 
-    public void enviarMensagemCliente(Cliente cliente, String mensagem) {
-        System.out.println("Mensagem enviada para " + cliente.getNome() + ": " + mensagem);
+     public void enviarMensagemCliente(Cliente cliente, String mensagem) {
+        System.out.println("Mensagem enviada para " + cliente.getNome() + ", para o número " +cliente.getTelefone()+ ": " + mensagem);
     }
 
     /**
