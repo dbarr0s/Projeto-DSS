@@ -1,7 +1,9 @@
 package esideal.ui;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -90,7 +92,15 @@ public class EstacaoUI {
         while (true) {
             System.out.println("----------BEM VINDO----------");
             System.out.println("Introduza o seu ID de funcionário");
-            int id = sc.nextInt();
+            int id;
+            try {
+                id = sc.nextInt();
+            } catch (InputMismatchException | NumberFormatException e) {
+                sc.nextLine();
+                System.out.println("Opção Inválida!!!");
+                return;     
+            }
+            
             int numTurno = 0;
     
             if (!this.funcionarios.funcionarioExiste(id)) {
@@ -104,7 +114,7 @@ public class EstacaoUI {
                 sistemaMecanico();
 
                 while (true) {
-                    System.out.println("Deseja encerrar seu turno? (S/N)");
+                    System.out.println("Deseja encerrar seu turno? S para encerrar, qualquer outra para voltar atrás");
                     String resposta = sc.next();
                     if (resposta.equalsIgnoreCase("S")) {
                         this.turnos.finalizarTurno(numTurno, id, LocalDateTime.now());
@@ -120,7 +130,7 @@ public class EstacaoUI {
                 sistemaGerente();
     
                 while (true) {
-                    System.out.println("Deseja encerrar seu turno? (S/N)");
+                    System.out.println("Deseja encerrar seu turno? S para encerrar, qualquer outra para voltar atrás");
                     String resposta = sc.next();
                     if (resposta.equalsIgnoreCase("S")) {
                         this.turnos.finalizarTurno(numTurno, id, LocalDateTime.now());
@@ -188,16 +198,31 @@ public class EstacaoUI {
         int idServico = 0;
         
         System.out.println("Introduzir ID do funcionário responsável: ");
-        int IDFuncionario = sc.nextInt();
+        int IDFuncionario;
+        try {
+            IDFuncionario = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Funcionário Inválido!!!");
+            return;     
+        }
+        
         if (!this.funcionarios.funcionarioExiste(IDFuncionario)) {
-            System.out.println("Não introduziu o número da ficha do veículo");
+            System.out.println("Não introduziu o número de um funcionário válido");
             sistemaGerente();
         }
         
-        System.out.println("Introduzir ID da ficha de veiculo: ");
-        int idFicha = sc.nextInt();
+        System.out.println("Introduzir ID da ficha de veículo: ");
+        int idFicha;
+        try {
+            idFicha = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Ficha de Veículo Inválida!!!");
+            return;
+        }
         if (!this.fichas.existeFicha(idFicha)) {
-            System.out.println("Não introduziu o número da ficha do veículo");
+            System.out.println("Não introduziu o número de uma ficha do veículo válida");
             sistemaGerente();
         }
 
@@ -205,12 +230,27 @@ public class EstacaoUI {
         String matricula = ficha.getMatricula();
         
         System.out.println("Introduzir custo do serviço: ");
-        float custo = sc.nextFloat();
+        float custo;
+        try {
+            custo = sc.nextFloat();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Custo Inválido!!!");
+            return;
+        }
         Estado estado = Estado.AGENDADO;
         
         System.out.println("Introduzir hora de inicio (Formato: yyyy-MM-ddTHH:mm:ss): ");
         String horaInicio = sc.next();
-        LocalDateTime horaInicioServico = LocalDateTime.parse(horaInicio);
+        LocalDateTime horaInicioServico;
+        try {
+            horaInicioServico = LocalDateTime.parse(horaInicio);
+        } catch (DateTimeParseException e) {
+            sc.nextLine();
+            System.out.println("Hora de Início Inválida!!!");
+            return;
+        }
+        horaInicioServico = LocalDateTime.parse(horaInicio);
         LocalDateTime horaFimServico = horaInicioServico.plusHours(2); 
 
         String sms = "Serviço foi criado com sucesso!";
@@ -221,7 +261,15 @@ public class EstacaoUI {
         System.out.println("4 - ELETRICO");
         System.out.println("5 - HIBRIDO");
 
-        int tipo = sc.nextInt();
+        int tipo;
+        try {
+            tipo = sc.nextInt();            
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Tipo Inválido!!!");
+            return;
+        }
+        
         TipoServico t = null;
 
         switch (tipo) {
@@ -250,7 +298,7 @@ public class EstacaoUI {
         }        
         else 
         {
-            System.out.println("Mensagem Enviada: Serviço não foi criado com sucesso!");
+            System.out.println("Mensagem Enviada: Serviço não foi criado com sucesso pois este funcionário não sabe fazer este serviço ou este serviço não é para este veículo!");
             System.out.println("Tente Novamente!");
             criarAgendarServico();
         }
@@ -303,16 +351,30 @@ public class EstacaoUI {
         int idCheckUp = 0;
 
         System.out.println("Introduzir ID do funcionário responsável: ");
-        int IDFuncionario = sc.nextInt();
+        int IDFuncionario;
+        try {
+            IDFuncionario = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Funcionário Inválido!!!");
+            return;     
+        }
         if (!this.funcionarios.funcionarioExiste(IDFuncionario)) {
-            System.out.println("Não introduziu o número do funcionário correto");
+            System.out.println("Não introduziu o número de um funcionário válido");
             sistemaGerente();
         }
         
         System.out.println("Introduzir ID da ficha de veiculo: ");
-        int idFicha = sc.nextInt();
+        int idFicha;
+        try {
+            idFicha = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Ficha de Veículo Inválida!!!");
+            return;
+        }
         if (!this.fichas.existeFicha(idFicha)) {
-            System.out.println("Não introduziu o número da ficha do veículo correto");
+            System.out.println("Não introduziu o número de uma ficha do veículo válida");
             sistemaGerente();
         }
         FichaVeiculo ficha = this.fichas.getFichas().get(idFicha);
@@ -322,7 +384,15 @@ public class EstacaoUI {
         //2023-12-20T11:50:00 -> FORMATO//
         String horaInicio = sc.next();
         
-        LocalDateTime horaInicioServico = LocalDateTime.parse(horaInicio);
+        LocalDateTime horaInicioServico;
+        try {
+            horaInicioServico = LocalDateTime.parse(horaInicio);
+        } catch (DateTimeParseException e) {
+            sc.nextLine();
+            System.out.println("Hora de Início Inválida!!!");
+            return;
+        }
+        horaInicioServico = LocalDateTime.parse(horaInicio);
         LocalDateTime datafim = horaInicioServico.plusHours(1); 
         
         if(this.funcionarios.getFuncionarios().get(IDFuncionario).getPostosMecanico().toString() == this.veiculos.getVeiculos().get(matricula).getTipoMotor().toString()){
@@ -380,15 +450,15 @@ public class EstacaoUI {
      */
     
     private void verificarClienteExiste() {
-        System.out.println("Introduza o Nome do cliente: ");
+        System.out.println("Introduza o nome do cliente: ");
         String n = sc.nextLine();
 
         if (this.clientes.clienteValido(n)) {
-            System.out.println("O cliente com Nome " + n + " é válido.");
+            System.out.println("O cliente com nome " + n + " é válido.");
             Cliente c = this.clientes.getClientes().get(n);
             System.out.println("Cliente: " + c);
         } else {
-            System.out.println("Não existe cliente com o Nome " + n);
+            System.out.println("Não existe cliente com o nome " + n);
         }
     }
 
@@ -397,13 +467,13 @@ public class EstacaoUI {
      */
     
     private void verificarClienteVeiculos() {
-        System.out.println("Introduza o Nome do cliente: ");
+        System.out.println("Introduza o nome do cliente: ");
         String n = sc.nextLine();
 
         Cliente cliente = this.clientes.getClientes().get(n);
         if (cliente != null) {
             if (this.clientes.clienteTemVeiculos(cliente)) {
-                System.out.println("O cliente com Nome " + n + " possui veículos associados.");
+                System.out.println("O cliente com nome " + n + " possui veículos associados.");
                 Map<String, Veiculo> todosVeiculos = cliente.getVeiculos();
 
                 if (todosVeiculos.isEmpty()) {
@@ -415,10 +485,10 @@ public class EstacaoUI {
                     }
                 }
             } else {
-                System.out.println("O cliente com Nome " + n + " não possui veículos associados.");
+                System.out.println("O cliente com nome " + n + " não possui veículos associados.");
             }
         } else {
-            System.out.println("Não existe cliente com o Nome " + n);
+            System.out.println("Não existe cliente com o nome " + n);
         }
     }
 
@@ -534,7 +604,14 @@ public class EstacaoUI {
 
     private void fichaVeic() {
         System.out.println("Introduza o número da ficha do veículo: ");
-        int numFicha = sc.nextInt();
+        int numFicha;
+        try {
+            numFicha = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Ficha de Veículo Inválida!!!");
+            return;
+        }
 
         if (this.fichas.existeFicha(numFicha)) {
             FichaVeiculo f = this.fichas.getFichas().get(numFicha);
@@ -550,7 +627,14 @@ public class EstacaoUI {
 
     private void listarServicos1() {
         System.out.println("Introduza o número da ficha do veículo: ");
-        int numFicha = sc.nextInt();
+        int numFicha;
+        try {
+            numFicha = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Ficha de Veículo Inválida!!!");
+            return;
+        }
 
         if (this.servicos.getServicos().isEmpty()) {
             System.out.println("Não há servicos registados.");
@@ -568,7 +652,14 @@ public class EstacaoUI {
 
     private void listarCheckUps1() {
         System.out.println("Introduza o número da ficha do veículo: ");
-        int numFicha = sc.nextInt();
+        int numFicha;
+        try {
+            numFicha = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Ficha de Veículo Inválida!!!");
+            return;
+        }
 
         if (this.checkups.getCheckUps().values().isEmpty()) {
             System.out.println("Não há check-ups registados.");
@@ -607,7 +698,19 @@ public class EstacaoUI {
     
     private void mostrarRegistosDeTodosFuncionarios() {
         System.out.println("Introduza o número de cartão de funcionário: ");
-        int numFunc = sc.nextInt();
+        int numFunc;
+        try {
+            numFunc = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Funcionário inválido!!!");
+            return;
+        }
+
+        if (!this.funcionarios.funcionarioExiste(numFunc)) {
+                System.out.println("Funcionário não encontrado.");
+                return; // Volta ao início do loop para nova tentativa de login
+        }
 
         TurnosDAO turnosDAO = TurnosDAO.getInstance();
         List<Turnos> registos = turnosDAO.getAllUniqueTurnos();
@@ -636,7 +739,20 @@ public class EstacaoUI {
 
     private void servDiaFuncionarios() {
         System.out.println("Introduza o número do cartão do funcionário: ");
-        int numFunc = sc.nextInt();
+        int numFunc;
+        try {
+            numFunc = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Funcionário inválido!!!");
+            return;
+        }
+
+         if (!this.funcionarios.funcionarioExiste(numFunc)) {
+                System.out.println("Funcionário não encontrado.");
+                return; // Volta ao início do loop para nova tentativa de login
+        }
+
         System.out.println("Lista dos serviços do dia:");
         for (Servico s : this.servicos.getServicos().values()) {
             if(s.getFuncResponsavel() == numFunc && (s.getEstado() == Estado.AGENDADO || s.getEstado() == Estado.EM_ANDAMENTO)) 
@@ -650,7 +766,19 @@ public class EstacaoUI {
 
     private void checkUpsDiaFuncionario() {
         System.out.println("Introduza o número do cartão do funcionário: ");
-        int numFunc = sc.nextInt();
+        int numFunc;
+        try {
+            numFunc = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Funcionário inválido!!!");
+            return;
+        }
+
+         if (!this.funcionarios.funcionarioExiste(numFunc)) {
+                System.out.println("Funcionário não encontrado.");
+                return; // Volta ao início do loop para nova tentativa de login
+        }
         System.out.println("Lista dos check-ups do dia:");
         for (CheckUp c : this.checkups.getCheckUps().values()) {
             if(c.getFuncResponsavel() == numFunc && (c.getEstado() == Estado.AGENDADO || c.getEstado() == Estado.EM_ANDAMENTO))
@@ -705,11 +833,26 @@ public class EstacaoUI {
 
     private void iniciarServico() {
         System.out.println("Introduza o número do serviço a iniciar: ");
-        int numServico = sc.nextInt();
+        int numServico;
+        try {
+            numServico = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Serviço inválido!!!");
+            return;
+        }
+        
         if(this.servicos.getServicos().get(numServico) != null)
         {
             System.out.println("Introduza o seu cartão a iniciar: ");
-            int numFunc = sc.nextInt();
+            int numFunc;
+            try {
+                numFunc = sc.nextInt();
+            } catch (InputMismatchException | NumberFormatException e) {
+                sc.nextLine();
+                System.out.println("Funcionário inválido!!!");
+                return;
+            }
 
             Servico servico = this.servicos.getServicos().get(numServico);
 
@@ -740,11 +883,25 @@ public class EstacaoUI {
         VeiculoFacade v = new VeiculoFacade();
         ClienteFacade c = new ClienteFacade();
         System.out.println("Introduza o número do serviço a finalizar: ");
-        int numServico = sc.nextInt();
+        int numServico;
+        try {
+            numServico = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Serviço inválido!!!");
+            return;
+        }
         
         if(this.servicos.getServicos().get(numServico) != null){
             System.out.println("Introduza o seu cartão a iniciar: ");
-            int numFunc = sc.nextInt();
+            int numFunc;
+            try {
+                numFunc = sc.nextInt();
+            } catch (InputMismatchException | NumberFormatException e) {
+                sc.nextLine();
+                System.out.println("Funcionário inválido!!!");
+                return;
+            }
         
             this.servicos.finalizarServico(numServico, numFunc);
             this.servicos.notificarClienteFimServico(numServico, v, c);
@@ -758,10 +915,24 @@ public class EstacaoUI {
 
     private void iniciarCheckUps() {
         System.out.println("Introduza o número do Check-Up a iniciar: ");
-        int numCheckUp = sc.nextInt();
+        int numCheckUp;
+        try {
+            numCheckUp = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Check-Up inválido!!!");
+            return;
+        }
         if(checkups.getCheckUps().get(numCheckUp) != null){
             System.out.println("Introduza o seu cartão a iniciar: ");
-            int numFunc = sc.nextInt();
+            int numFunc;
+            try {
+                numFunc = sc.nextInt();
+            } catch (InputMismatchException | NumberFormatException e) {
+                sc.nextLine();
+                System.out.println("Funcionário inválido!!!");
+                return;
+            }
         
             CheckUp checkUp = this.checkups.getCheckUps().get(numCheckUp);
             if (checkUp.getEstado() != Estado.CONCLUÍDO){
@@ -786,9 +957,23 @@ public class EstacaoUI {
         VeiculoFacade v = new VeiculoFacade();
         ClienteFacade cliente = new ClienteFacade();
         System.out.println("Introduza o número do Check-Up a finalizar: ");
-        int numCheckUp = sc.nextInt();
+        int numCheckUp;
+        try {
+            numCheckUp = sc.nextInt();
+        } catch (InputMismatchException | NumberFormatException e) {
+            sc.nextLine();
+            System.out.println("Check-Up inválido!!!");
+            return;
+        }
         System.out.println("Introduza o seu cartão a iniciar: ");
-        int numFunc = sc.nextInt();
+        int numFunc;
+            try {
+                numFunc = sc.nextInt();
+            } catch (InputMismatchException | NumberFormatException e) {
+                sc.nextLine();
+                System.out.println("Funcionário inválido!!!");
+                return;
+            }
         CheckUp c = checkups.getCheckUps().get(numCheckUp);
         if (c != null && c.getFuncResponsavel() == numFunc && c.getEstado() == Estado.EM_ANDAMENTO){
             c.setEstado(Estado.CONCLUÍDO);
@@ -796,7 +981,15 @@ public class EstacaoUI {
             CheckUpDAO checkUpDAO = CheckUpDAO.getInstance(); 
             checkUpDAO.atualizarEstadoCheckUp(c); 
             System.out.println("Introduza o número de serviços a agendar: ");
-            int num = sc.nextInt();
+            int num;
+            try {
+                num = sc.nextInt();
+            } catch (InputMismatchException | NumberFormatException e) {
+                sc.nextLine();
+                System.out.println("Número inválido!!!");
+                return;
+            }
+            
 
             if (num > 0){
                 for (int i = 0; i < num; i++){

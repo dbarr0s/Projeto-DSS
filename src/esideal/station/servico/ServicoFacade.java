@@ -80,6 +80,8 @@ public class ServicoFacade implements IServico{
             return; // Cancela o agendamento do check-up
         }
 
+        System.out.println("Serviço criado com sucesso!");
+
         servicos.put(novoServico.getNumServiço(), novoServico.clone());
         f1.getFichas().get(numFicha).getServicos().put(numServiço, novoServico.clone());
     }
