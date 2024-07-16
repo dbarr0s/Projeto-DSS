@@ -38,4 +38,4 @@ Cuidados especiais a ter na execução do sistema:
 # Conclusão
 Trabalho realizado por Pedro Silva, António Silva, Diogo Barros e Duarte Leitão.
 
-Nota final: 12/20
+Nota final: 13/20
